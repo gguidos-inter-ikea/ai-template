@@ -4,20 +4,19 @@ from src.base.infrastructure.db.mongoDB.mongo_client import MongoDBClient
 from motor.motor_asyncio import AsyncIOMotorCollection
 from bson import ObjectId
 import logging
-import asyncio
 
 logger = logging.getLogger(__name__)
 
 T = TypeVar('T', bound=Dict[str, Any])
 
-class DBRepository(Generic[T]):
+class MongoDBRepository(Generic[T]):
     """
     Generic repository to interact with MongoDB collections.
     This serves as an optional base class for domain-specific repositories
     that want to inherit common CRUD operations.
     """
 
-    def __init__(self, client: MongoDBClient, collection_name: str):
+    def __init__(self, client: MongoDBClient):
         """
         Initialize the repository.
         
@@ -26,14 +25,9 @@ class DBRepository(Generic[T]):
             collection_name: The name of the collection this repository will work with
         """
         self.client = client
-        self.collection_name = collection_name
         self.collection = None
         
-        # We need to make sure the client is connected before getting a collection
-        # This will happen during application startup in the lifespan context manager
-        logger.debug(f"Initialized repository for collection '{collection_name}'")
-
-    async def ensure_connected(self):
+    async def ensure_connected(self, collection_name:str):
         """
         Ensure that the MongoDB client is connected and the collection is available.
         This should be called before any repository operation.
@@ -45,7 +39,7 @@ class DBRepository(Generic[T]):
             ValueError: If the connection cannot be established
         """
         if self.collection is None:
-            logger.debug(f"Setting up collection {self.collection_name}")
+            logger.debug(f"Setting up collection {collection_name}")
             if self.client is None:
                 logger.error("MongoDB client is None")
                 raise ValueError("MongoDB client is not available")
@@ -57,15 +51,15 @@ class DBRepository(Generic[T]):
                     logger.debug("MongoDB client not connected, connecting now")
                     await self.client.connect()
                 
-                self.collection = self.client.get_collection(self.collection_name)
-                logger.debug(f"Successfully obtained collection {self.collection_name}")
+                self.collection = self.client.get_collection(collection_name)
+                logger.debug(f"Successfully obtained collection {collection_name}")
             except Exception as e:
-                logger.error(f"Error getting collection {self.collection_name}: {str(e)}")
+                logger.error(f"Error getting collection {collection_name}: {str(e)}")
                 raise ValueError(f"Failed to connect to MongoDB: {str(e)}")
         
         return self.collection
 
-    async def create(self, data: T) -> str:
+    async def create(self, data: T, collection_name:str) -> str:
         """
         Create a new document.
         
@@ -76,7 +70,7 @@ class DBRepository(Generic[T]):
             str: The ID of the created document
         """
         # Ensure we have a valid collection
-        collection = await self.ensure_connected()
+        collection = await self.ensure_connected(collection_name)
             
         # Make a copy to avoid modifying the original
         data_copy = data.copy()
@@ -93,7 +87,7 @@ class DBRepository(Generic[T]):
         doc_id = await self.client.insert_one(data_copy, collection)
         return str(doc_id)
 
-    async def find_all(self) -> List[T]:
+    async def find_all(self, collection_name: str) -> List[T]:
         """
         Retrieve all documents from the collection.
         
@@ -101,11 +95,11 @@ class DBRepository(Generic[T]):
             List[T]: All documents in the collection
         """
         # Ensure we have a valid collection
-        collection = await self.ensure_connected()
+        collection = await self.ensure_connected(collection_name)
             
         return await self.client.find({}, collection)
 
-    async def find(self, query: Dict[str, Any]) -> List[T]:
+    async def find(self, query: Dict[str, Any], collection_name:str) -> List[T]:
         """
         Retrieve documents that match the specified query.
 
@@ -116,11 +110,11 @@ class DBRepository(Generic[T]):
             List[T]: A list of documents that match the query
         """
         # Ensure we have a valid collection
-        collection = await self.ensure_connected()
+        collection = await self.ensure_connected(collection_name)
             
         return await self.client.find(query, collection)
         
-    async def find_one(self, query: Dict[str, Any]) -> Optional[T]:
+    async def find_one(self, query: Dict[str, Any], collection_name: str) -> Optional[T]:
         """
         Find a single document matching the query.
         
@@ -131,11 +125,11 @@ class DBRepository(Generic[T]):
             Optional[T]: The matching document or None if not found
         """
         # Ensure we have a valid collection
-        collection = await self.ensure_connected()
+        collection = await self.ensure_connected(collection_name)
             
         return await self.client.find_one(query, collection)
 
-    async def update(self, doc_id: str, data: Dict[str, Any]) -> bool:
+    async def update(self, doc_id: str, data: Dict[str, Any], collection_name: str) -> bool:
         """
         Update a document by ID.
         
@@ -147,7 +141,7 @@ class DBRepository(Generic[T]):
             bool: True if the update was successful, False otherwise
         """
         # Ensure we have a valid collection
-        collection = await self.ensure_connected()
+        collection = await self.ensure_connected(collection_name)
             
         # Ensure _id is not included in the update data
         if "_id" in data:
@@ -169,7 +163,7 @@ class DBRepository(Generic[T]):
         # Check if anything was updated
         return result.matched_count > 0
 
-    async def delete(self, doc_id: str) -> bool:
+    async def delete(self, doc_id: str, collection_name: str) -> bool:
         """
         Delete a document by ID.
         
@@ -180,7 +174,7 @@ class DBRepository(Generic[T]):
             bool: True if the document was deleted, False otherwise
         """
         # Ensure we have a valid collection
-        collection = await self.ensure_connected()
+        collection = await self.ensure_connected(collection_name)
             
         result = await self.client.delete_one(
             {"_id": ObjectId(doc_id)},
@@ -190,7 +184,7 @@ class DBRepository(Generic[T]):
         # Check if anything was deleted
         return result > 0
         
-    async def get_collection(self) -> AsyncIOMotorCollection:
+    async def get_collection(self, collection_name:str) -> AsyncIOMotorCollection:
         """
         Get the underlying collection object.
         
@@ -200,4 +194,4 @@ class DBRepository(Generic[T]):
         Raises:
             ValueError: If the collection is not available
         """
-        return await self.ensure_connected()
+        return await self.ensure_connected(collection_name)

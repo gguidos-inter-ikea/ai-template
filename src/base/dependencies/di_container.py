@@ -1,5 +1,4 @@
 from dependency_injector import containers, providers
-from dependency_injector.containers import DynamicContainer
 
 from src.base.dependencies.containers import (
     DatabaseContainer,
@@ -9,7 +8,8 @@ from src.base.dependencies.containers import (
     RedisContainer,
     RateLimiterContainer,
     MessagingContainer,
-    SettingsContainer
+    SettingsContainer,
+    ChromaDBContainer
 )
 
 class DomainsHolder:
@@ -35,9 +35,8 @@ class Container(containers.DeclarativeContainer):
     rate_limiter = providers.Container(RateLimiterContainer)
     messaging = providers.Container(MessagingContainer)
     settings_container = providers.Container(SettingsContainer)
-
-    # Use a single dynamic container to hold all domains.
-    # Instead of a DynamicContainer, use a plain holder.
+    chromadb = providers.Container(ChromaDBContainer)
+    
     domains = providers.Object(DomainsHolder())
 
 

@@ -101,7 +101,7 @@ class UserService:
                 {"username": username},
                 {"email": username}
             ]
-        })
+        }, 'users')
         
         # Check if user exists and is active
         if user is None or not user.get("active", True):

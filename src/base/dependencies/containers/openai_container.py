@@ -1,40 +1,29 @@
 import logging
 from dependency_injector import containers, providers
 from src.base.config.config import settings
-from openai import AzureOpenAI
+from src.base.infrastructure.ai.openai_client import OpenAIClient
+from src.base.repositories.openai_repository import OpenAIRepository
 
 logger = logging.getLogger(__name__)
-
-class AzureOpenAIWrapper:
-    def __init__(self, azure_endpoint: str, api_key: str, api_version: str):
-        self.azure_endpoint = azure_endpoint
-        self.api_key = api_key
-        self.api_version = api_version
-        self.client = AzureOpenAI(
-            azure_endpoint=azure_endpoint,
-            api_key=api_key,
-            api_version=api_version
-        )
-    
-    def __getattr__(self, name: str):
-        # Delegate attribute lookup to the wrapped client
-        return getattr(self.client, name)
 
 class OpenAIContainer(containers.DeclarativeContainer):
     """
     Container for OpenAI-related dependencies.
     """
     logger.info("Initializing OpenAIContainer")
+
     openai_client = providers.Singleton(
-        AzureOpenAI,
-        azure_endpoint = settings.ai_models.imc_azure_openai_endpoint_se, # or config.openai_endpoint()
-        api_key = settings.ai_models.imc_azure_openai_api_key_se,             # or config.openai_key()
-        api_version = settings.ai_models.openai_version      # or config.openai_version()
+        OpenAIClient,
+        url=settings.ai_models.url,
+        api_key=settings.ai_models.api_key,
+        embedding_model=settings.ai_models.embedding_model,
+        whispering_model=settings.ai_models.whispering_model,
+        image_model=settings.ai_models.image_model,
+        model=settings.ai_models.model,
+        model_mini=settings.ai_models.model_mini
     )
 
-    audio_client = providers.Singleton(
-        AzureOpenAI,
-        azure_endpoint = settings.ai_models.openai_endpoint,    # same endpoint
-        api_key = settings.ai_models.openai_key,                # same key
-        api_version = settings.ai_models.whispering_version      # fixed version for audio, as required
+    openai_repository = providers.Factory(
+        OpenAIRepository,
+        openai_client=openai_client
     )

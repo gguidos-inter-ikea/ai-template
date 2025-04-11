@@ -1,6 +1,6 @@
 from dependency_injector import containers, providers
 from src.base.infrastructure.db.mongoDB.mongo_client import MongoDBClient
-from src.base.repositories.mongodb import DBRepository
+from src.base.repositories.mongodb_repository import MongoDBRepository
 from src.base.config.config import settings
 
 class DatabaseContainer(containers.DeclarativeContainer):
@@ -15,7 +15,7 @@ class DatabaseContainer(containers.DeclarativeContainer):
     )
 
     # Generic repository factory
-    db_repository_factory = providers.Factory(
-        DBRepository,
+    mongodb_repository = providers.Factory(
+        MongoDBRepository,
         client=mongo_client
     )

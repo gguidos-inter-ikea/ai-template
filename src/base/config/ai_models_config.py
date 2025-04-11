@@ -16,12 +16,10 @@ class AiModelsConfig(BaseSettings):
         extra="allow"
     )
 
-    imc_azure_openai_api_key_se: str = ""
-    logger.info("Initializing AiModelsConfig {imc_azure_openai_api_key_se}".format(imc_azure_openai_api_key_se=imc_azure_openai_api_key_se))
-    openai_key: str = imc_azure_openai_api_key_se
-    imc_azure_openai_endpoint_se: str = ""
-    openai_endpoint: str = imc_azure_openai_endpoint_se
-    model_mini: str = "gpt-4o-mini-imc"
+    api_key: str = ""
+    url: str = ""
+    model_mini: str = "gpt-4o-mini"
+    embedding_model: str = "text-embedding-ada-002"
     model: str = "gpt-4o"
     model_batch: str = "gpt-4o-mini-batch"
     model_o1: str = ""
@@ -30,15 +28,3 @@ class AiModelsConfig(BaseSettings):
     image_version: str = "2024-02-01"
     whispering_model: str = "whisper-imc"
     whispering_version: str = "2024-06-01"
-
-    llm_config: dict = {
-        "config_list": [
-            {
-                "model": model,
-                "api_type": "azure",
-                "api_key": openai_key,
-                "base_url": openai_endpoint,
-                "api_version": openai_version
-            }
-        ]
-    }

@@ -4,14 +4,14 @@ User repository module.
 from datetime import datetime
 from typing import Dict, Any, List, Optional
 from src.base.infrastructure.db.mongoDB.mongo_client import MongoDBClient
-from src.base.repositories.mongodb import DBRepository
+from src.base.repositories.mongodb_repository import MongoDBRepository
 from src.domains.user.exceptions import DuplicateUserError, UserNotFoundError
 from bson import ObjectId
 
 # Define a type alias for better readability
 User = Dict[str, Any]
 
-class UserRepository(DBRepository[User]):
+class UserRepository(MongoDBRepository[User]):
     """Repository for performing CRUD operations on the users collection."""
 
     def __init__(self, client: MongoDBClient):
@@ -21,7 +21,7 @@ class UserRepository(DBRepository[User]):
         Args:
             client: The MongoDB client
         """
-        super().__init__(client, "users")
+        super().__init__(client)
 
     def _serialize_document(
         self, 
@@ -65,7 +65,7 @@ class UserRepository(DBRepository[User]):
         Returns:
             Optional[User]: The user if found, None otherwise
         """
-        user = await self.find_one({"email": email})
+        user = await self.find_one({"email": email}, 'users')
         return self._serialize_document(user)
 
     async def find_by_username(self, username: str) -> Optional[User]:
@@ -78,7 +78,7 @@ class UserRepository(DBRepository[User]):
         Returns:
             Optional[User]: The user if found, None otherwise
         """
-        user = await self.find_one({"username": username})
+        user = await self.find_one({"username": username}, 'users')
         return self._serialize_document(user)
         
     async def find_active_users(self) -> List[User]:
@@ -88,7 +88,7 @@ class UserRepository(DBRepository[User]):
         Returns:
             List[User]: List of active users
         """
-        users = await self.find({"active": True})
+        users = await self.find({"active": True}, 'users')
         return [self._serialize_document(user) for user in users]
         
     async def deactivate_user(self, user_id: str) -> bool:
@@ -105,7 +105,7 @@ class UserRepository(DBRepository[User]):
             UserNotFoundError: If the user doesn't exist
         """
         # First check if the user exists
-        user = await self.find_one({"_id": ObjectId(user_id)})
+        user = await self.find_one({"_id": ObjectId(user_id)}, 'users')
         if user is None:
             raise UserNotFoundError(user_id)
             
@@ -130,7 +130,7 @@ class UserRepository(DBRepository[User]):
             UserNotFoundError: If the user doesn't exist
         """
         # First check if the user exists
-        user = await self.find_one({"_id": ObjectId(user_id)})
+        user = await self.find_one({"_id": ObjectId(user_id)}, 'users')
         if user is None:
             raise UserNotFoundError(user_id)
             
@@ -163,7 +163,7 @@ class UserRepository(DBRepository[User]):
                 raise DuplicateUserError("username", user_data["username"])
             
         # Create the user
-        return await self.create(user_data)
+        return await self.create(user_data, "users")
         
     async def get_user_by_id(self, user_id: str) -> User:
         """
@@ -178,7 +178,7 @@ class UserRepository(DBRepository[User]):
         Raises:
             UserNotFoundError: If the user doesn't exist
         """
-        user = await self.find_one({"_id": ObjectId(user_id)})
+        user = await self.find_one({"_id": ObjectId(user_id)}, 'users')
         if user is None:
             raise UserNotFoundError(user_id)
             

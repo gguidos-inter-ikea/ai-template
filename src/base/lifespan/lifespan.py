@@ -47,10 +47,11 @@ async def lifespan(app: FastAPI):
         logger.info("MongoDB connection established successfully")
 
         app.state.settings = settings
-        app.state.redis_repository=container.redis.redis_repository()
         app.state.mongodb = mongo_client
-        app.state.ai_model_client = container.openai.openai_client()
-        app.state.ai_audio_client = container.openai.audio_client()
+        app.state.mongodb_repository=container.database.mongodb_repository()
+        app.state.redis_repository=container.redis.redis_repository()
+        app.state.openai_repository = container.openai.openai_repository()
+        app.state.chromadb_repository = container.chromadb.chromadb_repository()
         
 
         yield
