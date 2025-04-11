@@ -1,0 +1,187 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api_container
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./logs:/app/logs
+      - ./src:/app/src
+    env_file:
+      - .env
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - APPLICATION_NAME=${APPLICATION_NAME}
+      - APPLICATION_OWNER=${APPLICATION_OWNER}
+      - APPLICATION_OWNER_EMAIL=${APPLICATION_OWNER_EMAIL}
+      - ENVIRONMENT=${ENVIRONMENT}
+      - IMC_AZURE_OPENAI_ENDPOINT_SE=${IMC_AZURE_OPENAI_ENDPOINT_SE}
+      - IMC_AZURE_OPENAI_API_KEY_SE=${IMC_AZURE_OPENAI_API_KEY_SE}
+      - API_KEY=${API_KEY}
+      - PORT=${PORT}
+      - LOG_LEVEL=DEBUG
+      - ALLOWED_ADMIN_IPS=${ALLOWED_ADMIN_IPS}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - JWT_ALGORITHM=${JWT_ALGORITHM}
+      - JWT_EXPIRE_MINUTES=${JWT_EXPIRE_MINUTES}
+      - MONGODB_URI=${MONGODB_URI}
+      - MONGODB_DBNAME=${MONGODB_DBNAME}
+      - RABBITMQ_HOST=${RABBITMQ_HOST}
+      - RABBITMQ_PORT=${RABBITMQ_PORT}
+      - RABBITMQ_USER=${RABBITMQ_USER}
+      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
+      - RABBITMQ_MONITORING_QUEUE=${RABBITMQ_MONITORING_QUEUE}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_PREFIX=${REDIS_PREFIX}
+      - REDIS_DB=${REDIS_DB}
+      - REDIS_URL=${REDIS_URL}
+      - SECURITY_LOG_PATH=${SECURITY_LOG_PATH}
+      - SECURITY_LOG_TO_FILE=${SECURITY_LOG_TO_FILE}
+      - SECURITY_LOG_LEVEL=${SECURITY_LOG_LEVEL}
+      - ERROR_LOG_PATH=${ERROR_LOG_PATH}
+      - ERROR_LOG_TO_FILE=${ERROR_LOG_TO_FILE}
+      - ERROR_LOG_LEVEL=${ERROR_LOG_LEVEL}
+      - RATE_LIMIT_LOG_PATH=${RATE_LIMIT_LOG_PATH}
+      - RATE_LIMIT_LOG_TO_FILE=${RATE_LIMIT_LOG_TO_FILE}
+      - RATE_LIMIT_LOG_LEVEL=${RATE_LIMIT_LOG_LEVEL}
+      - MAX_AUTH_FAILURES_PER_IP=${MAX_AUTH_FAILURES_PER_IP}
+      - AUTH_FAILURE_WINDOW_SECONDS=${AUTH_FAILURE_WINDOW_SECONDS}
+      - RATE_LIMIT_LOG_WINDOW_DAYS=${RATE_LIMIT_LOG_WINDOW_DAYS}
+      - STANDARD_RATE_LIMIT=${STANDARD_RATE_LIMIT}
+      - STANDARD_RATE_LIMIT_WINDOW=${STANDARD_RATE_LIMIT_WINDOW}
+      - STRICT_RATE_LIMIT=${STRICT_RATE_LIMIT}
+      - STRICT_RATE_LIMIT_WINDOW=${STRICT_RATE_LIMIT_WINDOW}
+      - VERY_STRICT_RATE_LIMIT=${VERY_STRICT_RATE_LIMIT}
+      - VERY_STRICT_RATE_LIMIT_WINDOW=${VERY_STRICT_RATE_LIMIT_WINDOW}
+      - RATE_LIMIT_SUSPICIOUS_THRESHOLD=${RATE_LIMIT_SUSPICIOUS_THRESHOLD}
+      - MONITOR_RATE_LIMITS=${MONITOR_RATE_LIMITS}
+      - ALERTS_ENABLED=${ALERTS_ENABLED}
+      - ALERT_COOLDOWN_MINUTES=${ALERT_COOLDOWN_MINUTES}
+      - OBSERVABLE_LOG_TYPES=${OBSERVABLE_LOG_TYPES}
+      - TEAMS_ALERTS_ENABLED=${TEAMS_ALERTS_ENABLED}
+      - TEAMS_WEBHOOK_URL=${TEAMS_WEBHOOK_URL}
+      - TEAMS_ALERT_THRESHOLD=${TEAMS_ALERT_THRESHOLD}
+      - TEAMS_SUSPICIOUS_IP_THRESHOLD=${TEAMS_SUSPICIOUS_IP_THRESHOLD}
+      - EMAIL_ALERTS_ENABLED=${EMAIL_ALERTS_ENABLED}
+      - EMAIL_SMTP_SERVER=${EMAIL_SMTP_SERVER}
+      - EMAIL_SMTP_PORT=${EMAIL_SMTP_PORT}
+      - EMAIL_SENDER=${EMAIL_SENDER}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - EMAIL_RECIPIENTS=${EMAIL_RECIPIENTS}
+      - EMAIL_USE_TLS=${EMAIL_USE_TLS}
+      - EMAIL_ALERT_THRESHOLD=${EMAIL_ALERT_THRESHOLD}
+      - EMAIL_SUSPICIOUS_IP_THRESHOLD=${EMAIL_SUSPICIOUS_IP_THRESHOLD}
+      - SLACK_ALERTS_ENABLED=${SLACK_ALERTS_ENABLED}
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
+      - SLACK_ALERT_THRESHOLD=${SLACK_ALERT_THRESHOLD}
+      - SLACK_SUSPICIOUS_IP_THRESHOLD=${SLACK_SUSPICIOUS_IP_THRESHOLD}
+      - PYTHONPATH=/app
+      - UVICORN_ACCESS_LOG=True
+      - UVICORN_LOG_LEVEL=debug
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/internal/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - app_network
+
+  mongo:
+    image: mongo:4.4
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - app_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  redis:
+    image: redis:6-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - app_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672" # RabbitMQ Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-rabbit heartbeat_timeout 120"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - app_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - app_network
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    networks:
+      - app_network
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+    restart: unless-stopped
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  mongodb-data:
+  redis-data:
+  rabbitmq-data:
+  prometheus-data:
+  grafana-data:

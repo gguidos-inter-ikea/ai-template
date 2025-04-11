@@ -1,0 +1,79 @@
+# Development environment configuration template
+# Copy this file to application-dev.properties and fill in your local settings
+# IMPORTANT: Never commit application-dev.properties to version control
+
+# General settings
+project.name=API Project
+application.name=FastAPI App Development
+application.owner=Development Team
+application.owner.email=dev@example.com
+environment=development
+api.key=dev_api_key_change_in_production
+port=8000
+log.level=DEBUG
+allowed.admin.ips=["127.0.0.1","::1"]
+
+# JWT settings
+jwt.secret.key=dev_jwt_secret_change_in_production
+jwt.algorithm=HS256
+jwt.expire.minutes=60
+
+# MongoDB settings
+mongodb.uri=mongodb://localhost:27017
+mongodb.dbname=fastapi_app_dev
+
+# Redis settings
+redis.host=localhost
+redis.port=6379
+redis.password=
+redis.prefix=fastapi_app_dev:
+redis.db=0
+redis.url=redis://localhost:6379/0
+
+# Security logging
+security.log.path=./logs/security.log
+security.log.to.file=true
+security.log.level=DEBUG
+
+# Security thresholds
+max.auth.failures.per.ip=5
+auth.failure.window.seconds=300
+
+# Rate limiting settings
+standard.rate.limit=100
+standard.rate.limit.window=60
+strict.rate.limit=20
+strict.rate.limit.window=60
+very.strict.rate.limit=5
+very.strict.rate.limit.window=60
+rate.limit.suspicious.threshold=80
+monitor.rate.limits=true
+rate_limit_log_path=./logs/rate_limiter.log
+# Alert settings
+alerts.enabled=true
+alert.cooldown.minutes=15
+
+# Teams webhook
+teams.alerts.enabled=false
+teams.webhook.url=https://outlook.office.com/webhook/example
+teams.alert.threshold=5
+teams.suspicious.ip.threshold=3
+
+# Email alerts
+email.alerts.enabled=true
+email.smtp.server=smtp.gmail.com
+email.smtp.port=587
+email.sender=your.email@gmail.com
+email.password=your_app_password_here
+email.recipient1=your.email@gmail.com
+email.recipient2=
+email.recipient3=
+email.use.tls=true
+email.alert.threshold=10
+email.suspicious.ip.threshold=3
+
+# Slack alerts
+slack.alerts.enabled=false
+slack.webhook.url=https://hooks.slack.com/services/example
+slack.alert.threshold=5
+slack.suspicious.ip.threshold=3 

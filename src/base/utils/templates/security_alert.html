@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
+    <div style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; margin-bottom: 30px;">
+        <div style="background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%); color: white; padding: 20px; position: relative;">
+            <h2 style="margin: 0; font-weight: 600; display: flex; align-items: center; font-size: 1.5rem;">
+                <span style="font-size: 1.8rem; margin-right: 10px;">⚠️</span> Security Alert: Unauthorized Access Attempt
+            </h2>
+            <div style="margin-top: 8px; font-size: 0.9rem; opacity: 0.9;">{timestamp}</div>
+        </div>
+        
+        <div style="padding: 20px; border-bottom: 1px solid #eee;">
+            <h3 style="margin-top: 0; color: #cc0000; font-weight: 600; font-size: 1.2rem; display: flex; align-items: center;">
+                <span style="display: inline-block; width: 8px; height: 8px; background-color: #cc0000; border-radius: 50%; margin-right: 10px;"></span>
+                Event Details 
+                <span style="display: inline-block; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; text-transform: uppercase; margin-left: 10px; background-color: rgba(204, 0, 0, 0.15); color: #cc0000;">High Severity</span>
+            </h3>
+            <div style="display: grid; grid-template-columns: 140px 1fr; row-gap: 10px; column-gap: 15px; margin-bottom: 15px;">
+                <div style="font-weight: 600; color: #555;">Client IP:</div>
+                <div style="word-break: break-word;">{client_ip}</div>
+                
+                <div style="font-weight: 600; color: #555;">Path:</div>
+                <div style="word-break: break-word;">{path}</div>
+                
+                <div style="font-weight: 600; color: #555;">Method:</div>
+                <div style="word-break: break-word;">{method}</div>
+                
+                <div style="font-weight: 600; color: #555;">Reason:</div>
+                <div style="word-break: break-word; color: #cc0000; font-weight: bold;">{reason}</div>
+                
+                <div style="font-weight: 600; color: #555;">User Agent:</div>
+                <div style="word-break: break-word; font-size: 0.9rem;">{user_agent}</div>
+            </div>
+        </div>
+
+        <div style="padding: 20px; border-bottom: 1px solid #eee;">
+            <h3 style="margin-top: 0; color: #cc0000; font-weight: 600; font-size: 1.2rem; display: flex; align-items: center;">
+                <span style="display: inline-block; width: 8px; height: 8px; background-color: #cc0000; border-radius: 50%; margin-right: 10px;"></span>
+                Statistics
+            </h3>
+            <table style="width: 100%; border-collapse: collapse; margin: 15px 0; border-radius: 5px; overflow: hidden; box-shadow: 0 2px 3px rgba(0,0,0,0.1);">
+                <tr>
+                    <th style="background-color: #f0f0f0; font-weight: 600; text-align: left; color: #333; padding: 12px 15px; border: none;">Metric</th>
+                    <th style="background-color: #f0f0f0; font-weight: 600; text-align: left; color: #333; padding: 12px 15px; border: none;">Count</th>
+                    <th style="background-color: #f0f0f0; font-weight: 600; text-align: left; color: #333; padding: 12px 15px; border: none;">Status</th>
+                </tr>
+                <tr>
+                    <td style="padding: 12px 15px; border: none;">New Attempts (Last Hour)</td>
+                    <td style="padding: 12px 15px; border: none;">{new_attempts}</td>
+                    <td style="padding: 12px 15px; border: none;">
+                        {% if new_attempts > 10 %}
+                        <span style="color: #cc0000; font-weight: bold;">High</span>
+                        {% elif new_attempts > 5 %}
+                        <span style="color: #ff8800; font-weight: bold;">Medium</span>
+                        {% else %}
+                        <span style="color: #007bff; font-weight: bold;">Low</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr style="background-color: #f5f5f5;">
+                    <td style="padding: 12px 15px; border: none;">Unique IPs</td>
+                    <td style="padding: 12px 15px; border: none;">{unique_ips}</td>
+                    <td style="padding: 12px 15px; border: none;">
+                        {% if unique_ips > 5 %}
+                        <span style="color: #cc0000; font-weight: bold;">High</span>
+                        {% elif unique_ips > 2 %}
+                        <span style="color: #ff8800; font-weight: bold;">Medium</span>
+                        {% else %}
+                        <span style="color: #007bff; font-weight: bold;">Low</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px 15px; border: none;">Total Unauthorized Attempts</td>
+                    <td style="padding: 12px 15px; border: none;">{total_attempts}</td>
+                    <td style="padding: 12px 15px; border: none;">
+                        {% if total_attempts > 20 %}
+                        <span style="color: #cc0000; font-weight: bold;">High</span>
+                        {% elif total_attempts > 10 %}
+                        <span style="color: #ff8800; font-weight: bold;">Medium</span>
+                        {% else %}
+                        <span style="color: #007bff; font-weight: bold;">Low</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr style="background-color: #f5f5f5;">
+                    <td style="padding: 12px 15px; border: none;">Endpoint Attempts</td>
+                    <td style="padding: 12px 15px; border: none;">{endpoint_attempts}</td>
+                    <td style="padding: 12px 15px; border: none;">
+                        {% if endpoint_attempts > 15 %}
+                        <span style="color: #cc0000; font-weight: bold;">High</span>
+                        {% elif endpoint_attempts > 8 %}
+                        <span style="color: #ff8800; font-weight: bold;">Medium</span>
+                        {% else %}
+                        <span style="color: #007bff; font-weight: bold;">Low</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div style="padding: 20px; border-bottom: 1px solid #eee;">
+            <h3 style="margin-top: 0; color: #cc0000; font-weight: 600; font-size: 1.2rem; display: flex; align-items: center;">
+                <span style="display: inline-block; width: 8px; height: 8px; background-color: #cc0000; border-radius: 50%; margin-right: 10px;"></span>
+                Attack Pattern Analysis
+            </h3>
+            <p>{attack_pattern_analysis}</p>
+        </div>
+        
+        <div style="padding: 20px;">
+            <h3 style="margin-top: 0; color: #cc0000; font-weight: 600; font-size: 1.2rem; display: flex; align-items: center;">
+                <span style="display: inline-block; width: 8px; height: 8px; background-color: #cc0000; border-radius: 50%; margin-right: 10px;"></span>
+                Recommended Action
+            </h3>
+            <p>Based on the activity pattern, we recommend:</p>
+            <ul>
+                <li>Review logs for additional suspicious activity from IP {client_ip}</li>
+                <li>Verify firewall rules and rate limiting configurations</li>
+                <li>Consider adding the IP to blocklist if pattern continues</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div style="font-size: 0.85rem; color: #666; text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
+        This is an automated security alert generated by the API Security Monitoring System.
+        <br>Do not reply to this email. Contact your system administrator for assistance.
+    </div>
+</body>
+</html> 

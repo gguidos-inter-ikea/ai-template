@@ -1,0 +1,8 @@
+logs
+.env
+venv
+.venv
+__pycache__
+src/main/resources/application-dev.properties
+.pytest_cache
+.mypy_cache

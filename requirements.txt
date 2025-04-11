@@ -1,0 +1,55 @@
+# API Framework
+fastapi>=0.109.0
+fastapi-limiter>=0.1.0
+uvicorn[standard]>=0.27.0
+python-multipart>=0.0.6
+starlette>=0.31.0
+aiohttp>=3.8.0
+
+# Dependency Injection
+dependency-injector>=4.0.0
+
+# JWT
+python-jose>=3.4.0
+
+# Database
+aioredis>=2.0.1
+redis>=5.0.0
+motor>=3.0.0
+pymongo>=4.0.0
+
+# Document
+python-docx==1.1.2
+
+# llm
+openai==1.55.3
+
+# Data Validation
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+
+# Data sanitazion
+bleach>=6.2.0
+
+# HTTP Requests
+requests>=2.31.0
+
+# Monitoring
+prometheus-fastapi-instrumentator>=1.0.0
+prometheus-client>=0.16.0
+
+# Messaging
+pika>=1.3.2
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.1
+pytest-cov>=4.1.0
+pytest-mock>=3.12.0
+httpx>=0.25.0
+flake8>=7.0.0
+black>=24.0.0
+mypy>=1.8.0
+
+# Watchdog
+watchdog==3.0.0

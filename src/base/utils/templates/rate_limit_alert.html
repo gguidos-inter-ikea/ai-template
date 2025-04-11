@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
+    <div style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; margin-bottom: 30px;">
+        <div style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); color: white; padding: 20px; position: relative;">
+            <h2 style="margin: 0; font-weight: 600; display: flex; align-items: center; font-size: 1.5rem;">
+                <span style="font-size: 1.8rem; margin-right: 10px;">🚫</span> Rate Limit Alert: Threshold Exceeded
+            </h2>
+            <div style="margin-top: 8px; font-size: 0.9rem; opacity: 0.9;">{timestamp}</div>
+        </div>
+        
+        <div style="padding: 20px; border-bottom: 1px solid #eee;">
+            <h3 style="margin-top: 0; color: #e67e22; font-weight: 600; font-size: 1.2rem; display: flex; align-items: center;">
+                <span style="display: inline-block; width: 8px; height: 8px; background-color: #e67e22; border-radius: 50%; margin-right: 10px;"></span>
+                Event Details
+            </h3>
+            <div style="display: grid; grid-template-columns: 140px 1fr; row-gap: 10px; column-gap: 15px; margin-bottom: 15px;">
+                <div style="font-weight: 600; color: #555;">Client IP:</div>
+                <div style="word-break: break-word;">{client_ip}</div>
+                
+                <div style="font-weight: 600; color: #555;">Path:</div>
+                <div style="word-break: break-word;">{path}</div>
+                
+                <div style="font-weight: 600; color: #555;">Method:</div>
+                <div style="word-break: break-word;">{method}</div>
+                
+                <div style="font-weight: 600; color: #555;">Rate Limit:</div>
+                <div style="word-break: break-word; color: #e67e22; font-weight: bold;">{rate_limit} requests per {time_window}</div>
+                
+                <div style="font-weight: 600; color: #555;">User Agent:</div>
+                <div style="word-break: break-word; font-size: 0.9rem;">{user_agent}</div>
+            </div>
+            
+            <div style="width: 100%; background-color: #f0f0f0; border-radius: 4px; margin: 10px 0; overflow: hidden;">
+                <div data-width="{progress_percentage}" style="height: 10px; background: linear-gradient(to right, #f39c12, #e67e22); border-radius: 4px; width: 0;"></div>
+            </div>
+            <div style="font-size: 0.85rem; text-align: right;">{current_requests} of {rate_limit} requests ({progress_percentage}%)</div>
+        </div>
+
+        <div style="padding: 20px; border-bottom: 1px solid #eee;">
+            <h3 style="margin-top: 0; color: #e67e22; font-weight: 600; font-size: 1.2rem; display: flex; align-items: center;">
+                <span style="display: inline-block; width: 8px; height: 8px; background-color: #e67e22; border-radius: 50%; margin-right: 10px;"></span>
+                Rate Limit Statistics
+            </h3>
+            <table style="width: 100%; border-collapse: collapse; margin: 15px 0; border-radius: 5px; overflow: hidden; box-shadow: 0 2px 3px rgba(0,0,0,0.1);">
+                <tr>
+                    <th style="background-color: #f0f0f0; font-weight: 600; text-align: left; color: #333; padding: 12px 15px; border: none;">Metric</th>
+                    <th style="background-color: #f0f0f0; font-weight: 600; text-align: left; color: #333; padding: 12px 15px; border: none;">Count</th>
+                    <th style="background-color: #f0f0f0; font-weight: 600; text-align: left; color: #333; padding: 12px 15px; border: none;">Trend</th>
+                </tr>
+                <tr>
+                    <td style="padding: 12px 15px; border: none;">Current Request Count</td>
+                    <td style="padding: 12px 15px; border: none;">{current_requests}</td>
+                    <td style="padding: 12px 15px; border: none;">
+                        {% if current_requests > rate_limit %}
+                        <span style="font-weight: bold;">⬆️ Exceeds limit</span>
+                        {% else %}
+                        <span style="font-weight: bold;">✓ Within limit</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr style="background-color: #f5f5f5;">
+                    <td style="padding: 12px 15px; border: none;">Total Violations (Last Hour)</td>
+                    <td style="padding: 12px 15px; border: none;">{total_violations}</td>
+                    <td style="padding: 12px 15px; border: none;">
+                        {% if total_violations > 10 %}
+                        <span style="font-weight: bold;">⚠️ High</span>
+                        {% elif total_violations > 5 %}
+                        <span style="font-weight: bold;">⚠️ Medium</span>
+                        {% else %}
+                        <span style="font-weight: bold;">✓ Low</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px 15px; border: none;">Endpoint Violations</td>
+                    <td style="padding: 12px 15px; border: none;">{endpoint_violations}</td>
+                    <td style="padding: 12px 15px; border: none;">
+                        {% if endpoint_violations > 20 %}
+                        <span style="font-weight: bold;">⚠️ High</span>
+                        {% elif endpoint_violations > 10 %}
+                        <span style="font-weight: bold;">⚠️ Medium</span>
+                        {% else %}
+                        <span style="font-weight: bold;">✓ Low</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr style="background-color: #f5f5f5;">
+                    <td style="padding: 12px 15px; border: none;">IP Violations History</td>
+                    <td style="padding: 12px 15px; border: none;">{ip_violations}</td>
+                    <td style="padding: 12px 15px; border: none;">
+                        {% if ip_violations > 30 %}
+                        <span style="font-weight: bold;">⚠️ High</span>
+                        {% elif ip_violations > 15 %}
+                        <span style="font-weight: bold;">⚠️ Medium</span>
+                        {% else %}
+                        <span style="font-weight: bold;">✓ Low</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div style="padding: 20px;">
+            <h3 style="margin-top: 0; color: #e67e22; font-weight: 600; font-size: 1.2rem; display: flex; align-items: center;">
+                <span style="display: inline-block; width: 8px; height: 8px; background-color: #e67e22; border-radius: 50%; margin-right: 10px;"></span>
+                Traffic Analysis
+            </h3>
+            <p>{traffic_pattern_analysis}</p>
+            
+            <div style="background-color: #fff8e1; border-left: 4px solid #f39c12; padding: 15px; margin-top: 15px; border-radius: 0 5px 5px 0;">
+                <h4 style="margin-top: 0; margin-bottom: 10px; color: #e67e22;">Recommended Action</h4>
+                <p>{recommended_action}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div style="font-size: 0.85rem; color: #666; text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
+        This is an automated alert generated by the API Rate Limiting System.
+        <br>Do not reply to this email. Contact your system administrator for assistance.
+    </div>
+</body>
+</html> 
