@@ -10,8 +10,6 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
 from dependency_injector.wiring import inject
 from src.base.services.jwt_service import JWTService
-from src.base.middlewares.utils.jwt_utils import is_path_excluded
-from src.base.middlewares.utils.response_generator import generate_unauthorized_response
 from src.base.logging.security_logger import log_unauthorized_access
 from src.base.config.config import settings
 import logging
@@ -56,7 +54,8 @@ class JWTVerificationMiddleware(BaseHTTPMiddleware):
             r"^/internal/",
             r"^/metrics",
             r"^/api/v1/auth/verify-token",
-            r"^/api/v1/user/registration"
+            r"^/api/v1/user/registration",
+            r"^/api/v1/vector-store/wine"
         ]
         self.auth_header = auth_header
         logger.info(

@@ -9,6 +9,7 @@ from src.base.config.monitoring_settings import MonitoringSettings
 from src.base.config.security_config import SecurityConfig
 from src.base.config.text_config import TextConfig
 from src.base.config.text.config import TextConfigNew
+from src.base.config.chromadb_config import ChromaDBSettings
 class Settings:
     """
     Aggregated settings for the application.
@@ -25,5 +26,6 @@ class Settings:
         self.security = SecurityConfig()
         self.texts = TextConfig()
         self.textsNew = TextConfigNew()
+        self.chromadb = ChromaDBSettings()
 
 settings = Settings()

@@ -80,8 +80,8 @@ class MongoDBRepository(Generic[T]):
             del data_copy["_id"]
         
         # Add timestamps
-        data_copy["created"] = data_copy.get("created", datetime.utcnow())
-        data_copy["modified"] = data_copy.get("modified", datetime.utcnow())
+        data_copy["created"] = data_copy.get("created", datetime.now())
+        data_copy["modified"] = data_copy.get("modified", datetime.now())
         
         # Insert the document
         doc_id = await self.client.insert_one(data_copy, collection)

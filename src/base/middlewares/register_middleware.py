@@ -4,8 +4,7 @@ from src.base.middlewares import (
     LoggingMiddleware,
     RequestIDMiddleware,
     ResponseFormatMiddleware,
-    SecurityHeadersMiddleware,
-    SessionMiddleware
+    SecurityHeadersMiddleware
 )
 from src.base.middlewares.jwt_middleware import JWTVerificationMiddleware
 from src.base.config.config import settings
@@ -55,7 +54,9 @@ def register_middleware(app):
             r"^/api/v1/user/registration",
             r"^/api/v1/users/login",
             r"^/api/v1/users",
-            r"^/api/v1/chat"
+            r"^/api/v1/chat",
+            r"^/api/v1/vector-store",
+            r"^/api/v1/agents"
         ]
     )
     

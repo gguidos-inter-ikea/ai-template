@@ -109,7 +109,8 @@ class MongoDBClient:
         """
         try:
             documents = await collection.find(query).to_list(length=None)
-            return documents
+            sanitized = [self.sanitize_document(doc) for doc in documents]
+            return sanitized
         except Exception as e:
             logger.error(f"Error finding documents: {str(e)}")
             raise
@@ -127,6 +128,8 @@ class MongoDBClient:
         """
         try:
             document = await collection.find_one(query)
+            if (document):
+                document = self.sanitize_document(document)
             return document
         except Exception as e:
             logger.error(f"Error finding document: {str(e)}")
@@ -168,3 +171,9 @@ class MongoDBClient:
         except Exception as e:
             logger.error(f"Error deleting document: {str(e)}")
             raise
+
+    def sanitize_document(self, document: Dict[str, Any]) -> Dict[str, Any]:
+        """Converts non-serializable fields like ObjectId to strings."""
+        if '_id' in document:
+            document['_id'] = str(document['_id'])
+        return document

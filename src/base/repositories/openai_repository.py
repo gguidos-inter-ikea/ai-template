@@ -65,26 +65,55 @@ class OpenAIRepository:
         """
         try:
             return self.client.get_completion(prompt, max_tokens)
-        except Exception as e:
-            logger.error(f"Error retrieving completion: {e}")
+        except Exception:
+            import traceback
+            logger.error("Full OpenAI error: %s", traceback.format_exc())
             raise
+    
+    def generate(
+        self,
+        prompt: str,
+        user_input: str,
+        history: List[Dict[str, str]],
+        max_tokens: int = 150
+    ) -> str:
+        messages: List[Dict[str, str]] = []
 
-    async def get_completion_async(self, prompt: str, max_tokens: int = 150) -> str:
-        """
-        Asynchronously get a text completion for the given prompt.
+        # ✅ Add prompt as system message
+        if prompt:
+            messages.append({"role": "system", "content": str(prompt)})
 
-        Args:
-            prompt (str): The prompt to send to the API.
-            max_tokens (int): Maximum number of tokens to generate.
-            
-        Returns:
-            str: The generated text completion.
-        """
-        try:
-            return await self.client.get_completion_async(prompt, max_tokens)
-        except Exception as e:
-            logger.error(f"Error retrieving async completion: {e}")
-            raise
+        # ✅ Format conversation history
+        for turn in history:
+            if "user" in turn and turn["user"]:
+                messages.append({
+                    "role": "user",
+                    "content": str(turn["user"])
+                })
+            if "agent" in turn and turn["agent"]:
+                messages.append({
+                    "role": "assistant",
+                    "content": str(turn["agent"])
+                })
+
+        # ✅ Append latest user input
+        messages.append({
+            "role": "user",
+            "content": str(user_input)
+        })
+
+        # 🧪 Validate every message
+        for m in messages:
+            assert isinstance(m, dict), "Each message must be a dictionary"
+            assert "role" in m and "content" in m, "Each message must have 'role' and 'content'"
+            assert isinstance(m["role"], str) and isinstance(m["content"], str), "role/content must be strings"
+
+        # 🔍 Log sanitized payload
+        import json
+        logger.debug("[OpenAI Payload] %s", json.dumps(messages, indent=2))
+
+        # 🎯 Forward to the low-level OpenAI client
+        return self.get_chat_completion(messages=messages, max_tokens=max_tokens)
 
     def get_chat_completion(self, messages: List[Dict[str, str]], max_tokens: int = 150) -> str:
         """

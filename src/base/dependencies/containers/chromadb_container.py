@@ -5,6 +5,7 @@ from src.base.infrastructure.db.chromaDB.utils.create_embedding_function import 
 )
 from src.base.repositories.chromadb_repository import ChromaDBRepository
 from src.base.infrastructure.db.chromaDB.chromadb_client import ChromaDBClient
+from src.base.config.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +13,7 @@ class ChromaDBContainer(containers.DeclarativeContainer):
     
     chromadb_client = providers.Singleton(
         ChromaDBClient,
-        chroma_path='/chromaDB',
+        chroma_path=settings.chromadb.chromadb_path,
         embedding_function=create_embedding_function
     )
 

@@ -16,8 +16,8 @@ class AiModelsConfig(BaseSettings):
         extra="allow"
     )
 
-    api_key: str = ""
-    url: str = ""
+    openai_api_key: str = ""
+    openai_url: str = ""
     model_mini: str = "gpt-4o-mini"
     embedding_model: str = "text-embedding-ada-002"
     model: str = "gpt-4o"

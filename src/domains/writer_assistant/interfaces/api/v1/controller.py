@@ -3,7 +3,9 @@ from src.base.decorators.middleware.session_based import session_based
 from src.domains.writer_assistant.entities.metadata import RequestData
 from src.domains.writer_assistant.services.chat_service import ChatService
 from src.domains.writer_assistant.services.chat_history_service import ChatHistoryService
-from src.domains.writer_assistant.dependencies.get_chat_history_service import get_chat_history_service
+from src.domains.writer_assistant.dependencies.get_chat_history_service import (
+    get_chat_history_service
+)
 from src.domains.writer_assistant.dependencies.get_chat_service import get_chat_service
 import logging
 

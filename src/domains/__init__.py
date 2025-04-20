@@ -7,6 +7,7 @@ from src.base.dependencies.di_container import Container as BaseContainer
 # Import domain container extensions
 from src.domains.user.dependencies.di_container import extend_container as extend_with_user_domain
 from src.domains.writer_assistant.dependencies.di_container import extend_container as extend_with_writer_assistant_domain
+from src.domains.agentverse.dependencies.di_container import extend_container as extend_with_agentverse_domain
 
 def initialize_domains(container: BaseContainer) -> BaseContainer:
     """
@@ -21,6 +22,7 @@ def initialize_domains(container: BaseContainer) -> BaseContainer:
     # Extend the container with each domain
     container = extend_with_user_domain(container)
     container = extend_with_writer_assistant_domain(container)
+    container = extend_with_agentverse_domain(container)
 
     # Add more domains as needed:
 
@@ -28,3 +30,7 @@ def initialize_domains(container: BaseContainer) -> BaseContainer:
     # container = extend_with_yet_another_domain(container)
     
     return container
+
+__all__ = [
+    "initialize_domains",
+]

@@ -14,8 +14,8 @@ class OpenAIContainer(containers.DeclarativeContainer):
 
     openai_client = providers.Singleton(
         OpenAIClient,
-        url=settings.ai_models.url,
-        api_key=settings.ai_models.api_key,
+        url=settings.ai_models.openai_url,
+        api_key=settings.ai_models.openai_api_key,
         embedding_model=settings.ai_models.embedding_model,
         whispering_model=settings.ai_models.whispering_model,
         image_model=settings.ai_models.image_model,

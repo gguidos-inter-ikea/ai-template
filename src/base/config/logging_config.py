@@ -1,4 +1,3 @@
-import os
 import logging
 import logging.config
 import json
@@ -245,6 +244,11 @@ LOGGING_CONFIG = {
             "handlers": ["console", "file", "error_file"],
             "level": "DEBUG",
             "propagate": True,
+        },
+        "agentverse": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": False
         },
         "src.base.middlewares.logging": {
             "handlers": ["console", "access_file"],

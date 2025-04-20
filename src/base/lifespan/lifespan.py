@@ -48,10 +48,27 @@ async def lifespan(app: FastAPI):
 
         app.state.settings = settings
         app.state.mongodb = mongo_client
-        app.state.mongodb_repository=container.database.mongodb_repository()
         app.state.redis_repository=container.redis.redis_repository()
         app.state.openai_repository = container.openai.openai_repository()
         app.state.chromadb_repository = container.chromadb.chromadb_repository()
+
+        app.state.cognitive_modules = {
+            "llm": {
+                "openai": container.openai.openai_repository()
+            },
+            "db": {
+                "mongodb": container.database.mongodb_repository(),
+            },
+            "cache": {
+                "redis": container.redis.redis_repository(),
+            },
+            "knowledge_db": {
+                "chromadb": container.chromadb.chromadb_repository(),
+            },
+            "messaging": {
+                "rabbitmq": container.messaging.rabbitmq_service()
+            }
+        }
         
 
         yield

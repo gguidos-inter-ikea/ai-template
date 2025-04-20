@@ -1,5 +1,4 @@
 import logging
-import json
 import threading
 from src.base.infrastructure.messaging.rabbitMQ.pika_client import PikaClient
 
@@ -9,8 +8,7 @@ class RabbitMQRepository:
     def __init__(self, pika_client: PikaClient):
         self.pika_client = pika_client
         self._shutdown_lock = threading.Lock()
-
-        
+  
 
     def publish_message(self, queue_name, message):
         """Publish a message to a specific RabbitMQ queue"""
