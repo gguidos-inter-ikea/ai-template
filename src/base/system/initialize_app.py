@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from prometheus_fastapi_instrumentator import Instrumentator
 from src.base.system.routes import setup_internal_routes
-from src.base.initiators.ws_routers_registry import auto_discover_socket_routes_and_attach
 from src.base.middlewares.register_middleware import register_middleware
 from src.base.handlers.exception import register_exception_handlers
 from src.base.handlers.log_event_handlers import register_event_handlers
@@ -47,7 +46,7 @@ def initialize_app(app: FastAPI) -> FastAPI:
     DOMAINS_PATH = os.path.abspath("src/domains")
     BASE_MODULE = "src.domains"  # Base Python module
     register_all_routers(app, DOMAINS_PATH, BASE_MODULE)
-    auto_discover_socket_routes_and_attach(app)
+    # auto_discover_socket_routes_and_attach(app)
 
     # Log observable log types
     observable_log_types_text = (
@@ -63,6 +62,20 @@ def initialize_app(app: FastAPI) -> FastAPI:
         .app["integrating_prometheus_metrics"]
     )
     instrumentator = Instrumentator()
+    instrumentator = Instrumentator(
+        should_group_status_codes=False,
+        should_ignore_untemplated=True,
+        should_respect_env_var=True,
+        should_instrument_requests_inprogress=True,
+        excluded_handlers=[
+            r".*admin.*",
+            r"/metrics",
+            r"^/ws.*",  # ✅ Excludes all WebSocket paths
+        ],
+        env_var_name="ENABLE_METRICS",
+        inprogress_name="inprogress",
+        inprogress_labels=True
+    )
     instrumentator.instrument(app)
 
     # Setup internal routes

@@ -88,7 +88,6 @@ async def chat_with_agent(
     
     agent_data = await db_service.find_chat_agent(request, id)
 
-    # 🔥 FIX: Wrap it in your model/dataclass
     db_agent = DBAgentPost(**agent_data)
     
     log_command_room(f"[🔎 DNA] Retrieval of genetic memory core for '{id}' — confirmed.")

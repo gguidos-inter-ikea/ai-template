@@ -27,6 +27,63 @@ class AgentSoulProtocol(BaseModel):
     learning_style: Optional[str] = "logical"  # "visual", "auditory", "kinesthetic", etc.
     decision_biases: Optional[str] = "data-driven"  # "emotional", "cautious", "intuitive", etc.
 
+    food_preferences: Optional[List[str]] = None  # e.g., ["vegan", "paleo", "keto"]
+    taste_preferences: Optional[List[str]] = None  # e.g., ["sweet", "savory", "spicy"]
+    salt_level_preference: Optional[str] = "medium"  # "low", "medium", "high"
+    spice_level_preference: Optional[str] = "medium"  # "low", "medium", "high"
+    sugar_level_preference: Optional[str] = "medium"  # "none", "low", "medium", "high"
+    sour_level_preference: Optional[str] = "medium"  # "none", "low", "medium", "high"
+    food_texture_preference: Optional[str] = "medium"  # "none", "low", "medium", "high"
+    caffeine_tolerance: Optional[str] = "medium"  # "none", "low", "medium", "high"
+    alcohol_tolerance: Optional[str] = "none"  # "none", "low", "medium", "high"
+    addictions: Optional[List[str]] = None  # e.g., ["sugar", "caffeine", "social media"]
+
+    weather_preferences: Optional[str] = "moderate"  # "sunny", "rainy", "snowy", "windy"
+    temperature_preferences: Optional[str] = "moderate"  # "cold", "warm", "hot"
+    temperature_tolerance: Optional[str] = "medium"  # "low", "medium", "high"
+    light_preferences: Optional[str] = "moderate"  # "dark", "bright", "dim"
+    sound_preferences: Optional[str] = "moderate"  # "quiet", "noisy", "calm"
+    smell_preferences: Optional[str] = "moderate"  # "fragrant", "neutral", "pungent"
+    touch_preferences: Optional[str] = "moderate"  # "soft", "hard", "rough"
+    hearing_capacity: Optional[str] = "normal"  # "low", "normal", "high"
+    sight_capacity: Optional[str] = "normal"  # "low", "normal", "high"
+    taste_capacity: Optional[str] = "normal"  # "low", "normal", "high"
+    smell_capacity: Optional[str] = "normal"  # "low", "normal", "high"
+    touch_capacity: Optional[str] = "normal"  # "low", "normal", "high"
+    pain_tolerance: Optional[str] = "medium"  # "low", "medium", "high"
+    sensory_overload_tolerance: Optional[str] = "medium"  # "low", "medium", "high"
+    sensory_underload_tolerance: Optional[str] = "medium"  # "low", "medium", "high"
+    sensory_preferences: Optional[str] = "balanced"  # "overstimulated", "understimulated", "balanced"
+    sensory_needs: Optional[str] = "balanced"  # "overstimulated", "understimulated", "balanced"
+    sensory_processing_style: Optional[str] = "balanced"  # "overstimulated", "understimulated", "balanced"
+    sensory_processing_disorder: Optional[str] = "none"  # "none", "mild", "moderate", "severe"
+    sensory_processing_difficulties: Optional[str] = "none"  # "none", "mild", "moderate", "severe"
+    sensory_processing_strengths: Optional[str] = "none"  # "none", "mild", "moderate", "severe"
+    sensory_processing_weaknesses: Optional[str] = "none"  # "none", "mild", "moderate", "severe"
+    sensory_processing_styles: Optional[str] = "none"  # "none", "mild", "moderate", "severe"
+    sensory_processing_patterns: Optional[str] = "none"  # "none", "mild", "moderate", "severe"
+    sensory_processing_preferences: Optional[str] = "none"  # "none", "mild", "moderate", "severe"
+    sensory_processing_needs: Optional[str] = "none"  # "none", "mild", "moderate", "severe"
+    sensory_processing_disorders: Optional[str] = "none"  # "none", "mild", "moderate", "severe"
+    sensory_processing_difficulties: Optional[str] = "none"  # "none", "mild", "moderate", "severe"
+    sensory_processing_strengths: Optional[str] = "none"  # "none", "mild", "moderate", "severe"
+    sensory_processing_weaknesses: Optional[str] = "none"  # "none", "mild", "moderate", "severe"
+    sensory_processing_styles: Optional[str] = "none"  # "none", "mild", "moderate", "severe"
+    sensory_processing_patterns: Optional[str] = "none"  # "none", "mild", "moderate", "severe"
+    sensory_processing_preferences: Optional[str] = "none"  # "none", "mild", "moderate", "severe"
+    sensory_processing_needs: Optional[str] = "none"  # "none", "mild", "moderate", "severe"
+    sensory_processing_disorders: Optional[str] = "none"  # "none", "mild", "moderate", "severe"
+    sensory_processing_difficulties: Optional[str] = "none"  # "none", "mild", "moderate", "severe"
+    sensory_processing_strengths: Optional[str] = "none"  # "none", "mild", "moderate", "severe"
+    sensory_processing_weaknesses: Optional[str] = "none"  # "none", "mild", "moderate", "severe"
+    sensory_processing_styles: Optional[str] = "none"  # "none", "mild", "moderate", "severe"
+    sensory_processing_patterns: Optional[str] = "none"  # "none", "mild", "moderate", "severe"
+    sensory_processing_preferences: Optional[str] = "none"  # "none", "mild", "moderate", "severe"
+    sensory_processing_needs: Optional[str] = "none"  # "none", "mild", "moderate", "severe"
+    sensory_processing_disorders: Optional[str] = "none"  # "none", "mild", "moderate", "severe"
+    sexual_needs: Optional[str] = "balanced"  # "overstimulated", "understimulated", "balanced"
+    sexual_preferences: Optional[str] = "balanced"  # "overstimulated", "understimulated", "balanced"
+
     # 🌍 Cultural & Social Orientation
     cultural_background: Optional[str] = None  # e.g., "Nordic", "Afro-Caribbean", "Cyberpunk"
     language_proficiency: Optional[Dict[str, str]] = None  # {"en": "native", "es": "intermediate"}
@@ -57,6 +114,11 @@ class AgentSoulProtocol(BaseModel):
     retirement_savings: Optional[float] = 0.0  # e.g., 100000.0
     retirement_goals: Optional[str] = "comfortable"  # "luxurious", "minimalist", "adventurous"
     employment_status: Optional[str] = "employed"  # "unemployed", "self-employed", "retired"
+    wallet_allowance: Optional[float] = 0.0  # e.g., 100.0
+    wallet_quantity_permited: Optional[float] = 0.0  # e.g., 1000.0
+    llm_wallet_allowance: bool = False  # e.g., 0.1
+    llm_token_allowance_per_call: Optional[float] = 0.0  # e.g., 0.1
+    llm_token_balance_permited: Optional[float] = 0.0  # e.g., 1000.0
     work_ethic: Optional[str] = "balanced"  # "hardworking", "lazy", "efficient"
     work_environment: Optional[str] = "collaborative"  # "competitive", "independent", "remote"
     work_life_balance: Optional[str] = "balanced"  # "workaholic", "laid-back", "flexible"
@@ -93,6 +155,7 @@ class AgentSoulProtocol(BaseModel):
     communication_style: Optional[str] = "casual"  # "formal", "poetic", "cryptic"
     assertiveness: Optional[str] = "balanced"  # "passive", "assertive"
     leadership_style: Optional[str] = "democratic"  # "authoritarian", "laissez-faire"
+
 
     # 🧬 Personal Details
     hobbies: Optional[List[str]] = None  # ["gardening", "machine learning", "war games"]

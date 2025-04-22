@@ -5,6 +5,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 def extract_domain_from_path(path: str) -> str:
     """
     Extracts the domain from the URL path.

@@ -4,7 +4,7 @@ Redis Repository Implementation.
 This module provides a concrete implementation of the RedisRepository interface
 using aioredis for asynchronous Redis operations.
 """
-from typing import List, Optional
+from typing import List, Optional, AsyncIterator
 import aioredis
 from src.base.repositories.redis_repository import RedisRepository
 
@@ -53,6 +53,18 @@ class RedisRepositoryImpl(RedisRepository):
         if expiration:
             return await self.redis.set(key, value, ex=expiration)
         return await self.redis.set(key, value)
+    
+    async def subscribe_channel(self, channel: str) -> AsyncIterator[str]:
+        pubsub = self.redis.pubsub()
+        await pubsub.subscribe(channel)
+
+        try:
+            async for message in pubsub.listen():
+                if message["type"] == "message":
+                    yield message["data"].decode()
+        finally:
+            await pubsub.unsubscribe(channel)
+            await pubsub.close()
     
     async def lpush(self, key: str, value: str) -> int:
         """

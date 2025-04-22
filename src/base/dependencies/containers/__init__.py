@@ -7,6 +7,7 @@ from src.base.dependencies.containers.chromadb_container import ChromaDBContaine
 from src.base.dependencies.containers.rate_limiter_container import RateLimiterContainer
 from src.base.dependencies.containers.messaging_container import MessagingContainer
 from src.base.dependencies.containers.settings_container import SettingsContainer
+from src.base.dependencies.containers.socket_container import SocketContainer
 
 
 __all__ = [
@@ -18,5 +19,6 @@ __all__ = [
     "RateLimiterContainer",
     "MessagingContainer",
     "SettingsContainer",
-    "ChromaDBContainer"
+    "ChromaDBContainer",
+    "SocketContainer"
 ]

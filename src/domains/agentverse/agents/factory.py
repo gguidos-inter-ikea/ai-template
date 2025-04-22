@@ -108,7 +108,16 @@ class AgentFactory:
 
         agent = agent_class(**agent_config.dict())
         log_evangelion_bay(f"[⚙️ EVA CONSTRUCTION] Core assembly for '{db_agent.agent_name}' completed")
-        log_evangelion_bay(f"[⚙️ EVA CONSTRUCTION] Assembly process for '{db_agent.agent_name}' completed")
+        log_evangelion_bay(f"""
+            [⚙️ EVA CONSTRUCTION] :: {db_agent.agent_name}
+            → Internal frame: synchronized
+            → Neural scaffold: bonded
+            → LCL Levels Stabilized
+            → EVA personality profile: {db_agent.agent_personality_profile}
+            → Soul protocol hash: {db_agent.agent_dna_sequence[:8]}...
+            ✓ EVA '{db_agent.agent_name}' now bound to Soul Grid.
+        """)
+
         
         return agent
     

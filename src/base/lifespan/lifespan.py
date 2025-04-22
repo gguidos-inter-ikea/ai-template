@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from fastapi_limiter import FastAPILimiter
 from src.base.config.config import settings
 from src.base.lifespan.utils import process_message_callback, start_consumer
+from src.domains.agentverse.events.message_events import register_message_events
 import logging
 
 logger = logging.getLogger("lifespan")
@@ -27,7 +28,7 @@ async def lifespan(app: FastAPI):
     
     # Initialize MongoDB connection
     mongo_client = container.database.mongo_client()
-
+    
     # Start RabbitMQ consumer
     logger.info("Starting RabbitMQ consumer...")
     consumer = container.messaging.consumer()
@@ -36,6 +37,7 @@ async def lifespan(app: FastAPI):
         queue_name=settings.messaging.rabbitmq_monitoring_queue,
         callback=process_message_callback
     )
+    event_router = container.socket.event_router()
 
     try:
         # Test Redis connection
@@ -50,8 +52,9 @@ async def lifespan(app: FastAPI):
         app.state.mongodb = mongo_client
         app.state.redis_repository=container.redis.redis_repository()
         app.state.openai_repository = container.openai.openai_repository()
-        app.state.chromadb_repository = container.chromadb.chromadb_repository()
-
+        app.state.event_router = event_router
+        register_message_events(event_router)
+        
         app.state.cognitive_modules = {
             "llm": {
                 "openai": container.openai.openai_repository()
@@ -61,6 +64,9 @@ async def lifespan(app: FastAPI):
             },
             "cache": {
                 "redis": container.redis.redis_repository(),
+            },
+            "communication": {
+                "socketRedisBridge": container.redis.socket_redis_bridge_service(),
             },
             "knowledge_db": {
                 "chromadb": container.chromadb.chromadb_repository(),

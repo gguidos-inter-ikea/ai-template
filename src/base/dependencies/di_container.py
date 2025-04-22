@@ -9,7 +9,8 @@ from src.base.dependencies.containers import (
     RateLimiterContainer,
     MessagingContainer,
     SettingsContainer,
-    ChromaDBContainer
+    ChromaDBContainer,
+    SocketContainer
 )
 
 class DomainsHolder:
@@ -36,6 +37,7 @@ class Container(containers.DeclarativeContainer):
     messaging = providers.Container(MessagingContainer)
     settings_container = providers.Container(SettingsContainer)
     chromadb = providers.Container(ChromaDBContainer)
+    socket = providers.Container(SocketContainer)
     
     domains = providers.Object(DomainsHolder())
 

@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional
 from fastapi import Request
 from src.domains.agentverse.agents.factory import (
     AgentFactory
@@ -15,6 +15,7 @@ from src.domains.agentverse.exceptions import (
     UnknownAgentTypeError,
     InvalidComponentError
 )
+from src.domains.agentverse.command_room.command_room import CommandRoomTransmitter
 import logging
 
 logger = logging.getLogger(__name__)
@@ -68,7 +69,17 @@ class AgentService:
         )
 
     
-    def agent_config(self, agent_request: AgentRequest):
+    async def agent_config(
+            self,
+            agent_request: AgentRequest,
+            commandroom: Optional[CommandRoomTransmitter] = None,
+            socket_id: Optional[str] = None
+        ) -> AgentConfig:
+      
+        await commandroom.to_socket(
+            socket_id=socket_id,
+            message=f"[OP COMMANDER][🔬 EVA ASSEMBLY] Sequencing DNA for prototype type '{agent_request.type}'"
+        )
         log_operations_commander(f"[🔬 EVA ASSEMBLY] Sequencing DNA for prototype type '{agent_request.type}'")
         agent_config = AgentConfig(
             user_id = agent_request.user_id,
@@ -84,7 +95,12 @@ class AgentService:
             messaging_type=agent_request.messaging_type
 
         )
-        log_operations_commander(f"[🔬 EVA ASSEMBLY] Sequencing DNA for prototype type '{agent_request.type}' completed")
+     
+        await commandroom.to_socket(
+            socket_id=socket_id,
+            message=f"[OP COMMANDER][🔬 EVA ASSEMBLY] Sequencing DNA for prototype type '{agent_request.type}' completed"
+        )
+        log_operations_commander(f"[OP COMMANDER][🔬 EVA ASSEMBLY] Sequencing DNA for prototype type '{agent_request.type}' completed")
         return agent_config
 
     def create_agent(self, agent_config: AgentConfig):
@@ -96,11 +112,30 @@ class AgentService:
         return agent
     
     def build_agent(self, request, db_agent: DBAgentPost) -> DBAgentPost:
+        """
+        Constructs an EVA agent from the given database agent blueprint.
+        
+        Args:
+            request: The active request context.
+            db_agent (DBAgentPost): The agent blueprint retrieved from persistent storage.
+
+        Returns:
+            DBAgentPost: The fully realized EVA agent object.
+        
+        Raises:
+            RuntimeError: If the agent construction fails.
+        """
+        log_operations_commander(f"[🔧 EVA CONSTRUCTION] Initiating core assembly for '{db_agent.agent_name}'")
+        
         agent = self.agent_factory.build_agent(request, db_agent)
-        log_operations_commander(f"[🔧 EVA CONSTRUCTION] Building EVA '{agent.name}'")
-        if agent is None:
+
+        if not agent:
+            log_operations_commander(f"[❌ EVA CONSTRUCTION] Failed to construct '{db_agent.agent_name}'.")
             raise RuntimeError("Agent construction failed — factory returned None.")
+        
+        log_operations_commander(f"[🧬 SYNCHRONIZATION] Agent '{agent.name}' A.T. Field deployed and stabilized.")
         return agent
+
     
     def execute_task(self, message, agent):
         if agent is None:

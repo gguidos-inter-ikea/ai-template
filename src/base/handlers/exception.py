@@ -1,5 +1,5 @@
 import uuid
-from fastapi import Request, HTTPException, FastAPI
+from fastapi import Request, HTTPException, FastAPI, WebSocket
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.exceptions import RequestValidationError
@@ -320,24 +320,24 @@ def register_exception_handlers(app: FastAPI) -> None:
             )}
         )
 
-def get_request_context(request: Request) -> Dict[str, str]:
+def get_request_context(request: Union[Request, WebSocket]) -> Dict[str, str]:
     """
-    Extract useful context information from the request.
-    
-    Args:
-        request: The FastAPI request object
-        
-    Returns:
-        Dictionary with context information
+    Extract useful context information from the request or websocket.
     """
-    return {
+    base_context = {
         "request_id": getattr(request.state, "request_id", str(uuid.uuid4())),
         "path": request.url.path,
-        "method": request.method,
         "client_ip": request.client.host if request.client else "unknown",
         "user_agent": request.headers.get("user-agent", "unknown"),
-        "referer": request.headers.get("referer", "none")
+        "referer": request.headers.get("referer", "none"),
     }
+
+    if isinstance(request, Request):
+        base_context["method"] = request.method
+    else:
+        base_context["method"] = "WEBSOCKET"
+
+    return base_context
 
 def format_validation_errors(
         errors: List[Dict[str, Any]]

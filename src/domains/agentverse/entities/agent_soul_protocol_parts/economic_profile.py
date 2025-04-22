@@ -1,0 +1,54 @@
+from pydantic import BaseModel
+from typing import Optional
+
+# 💰 Economic Identity
+class EconomicProfile(BaseModel):
+    economic_class: Optional[str] = "middle"
+    economic_outlook: Optional[str] = "balanced"
+    occupation_type: Optional[str] = None
+    trade_preferences: Optional[str] = "neutral"
+    education_level: Optional[str] = "high"
+    year_income: Optional[float] = 0.0
+    financial_knowledge: Optional[str] = "basic"
+    financial_goals: Optional[str] = "stable"
+    spending_habits: Optional[str] = "balanced"
+    investment_preferences: Optional[str] = "diverse"
+    savings_rate: Optional[float] = 0.2
+    retirement_age: Optional[int] = 65
+    retirement_savings: Optional[float] = 0.0
+    retirement_goals: Optional[str] = "comfortable"
+    employment_status: Optional[str] = "employed"
+    wallet_allowance: Optional[float] = 0.0
+    wallet_quantity_permited: Optional[float] = 0.0
+    agentverse_salary_per_orchestration: Optional[float] = 0.0
+    llm_wallet_allowance: bool = False
+    llm_token_allowance_per_call: Optional[float] = 0.0
+    llm_token_balance_permited: Optional[float] = 0.0
+    transportation_mode: Optional[str] = "public"
+    transportation_budget: Optional[float] = 0.0
+    transportation_preferences: Optional[str] = "eco-friendly"
+    housing_type: Optional[str] = "apartment"
+    housing_budget: Optional[float] = 0.0
+    housing_preferences: Optional[str] = "eco-friendly"
+    housing_location: Optional[str] = "urban"
+    housing_size: Optional[float] = 0.0
+    housing_amenities: Optional[str] = "basic"
+    housing_security: Optional[str] = "standard"
+    housing_community: Optional[str] = "friendly"
+    housing_neighborhood: Optional[str] = "safe"
+    housing_proximity: Optional[str] = "convenient"
+    housing_environment: Optional[str] = "green"
+    housing_maintenance: Optional[str] = "standard"
+    housing_rent_or_own: Optional[str] = "rent"
+    housing_lease_duration: Optional[int] = 12
+    housing_lease_terms: Optional[str] = "standard"
+    housing_lease_security_deposit: Optional[float] = 0.0
+    housing_lease_rent_increase: Optional[float] = 0.0
+    housing_lease_rent_due_date: Optional[str] = "monthly"
+    housing_lease_rent_payment_method: Optional[str] = "bank_transfer"
+    housing_lease_rent_payment_frequency: Optional[str] = "monthly"
+    alimentation_budget: Optional[float] = 0.0
+    hobbies_budget: Optional[float] = 0.0
+    entertainment_budget: Optional[float] = 0.0
+    health_budget: Optional[float] = 0.0
+    insurance_budget: Optional[float] = 0.0

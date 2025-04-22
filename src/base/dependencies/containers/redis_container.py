@@ -2,7 +2,7 @@ from dependency_injector import containers, providers
 import aioredis
 from src.base.config.config import settings
 from src.base.repositories.redis_impl import RedisRepositoryImpl
-from src.base.infrastructure.db.redis.redis_client import RedisClient
+from src.base.services.ws_redis_bridge_service import SocketRedisBridgeService
 
 class RedisContainer(containers.DeclarativeContainer):
     """
@@ -22,4 +22,9 @@ class RedisContainer(containers.DeclarativeContainer):
     redis_repository = providers.Resource(
         RedisRepositoryImpl,
         redis_client = redis_client
+    )
+
+    socket_redis_bridge_service = providers.Factory(
+        SocketRedisBridgeService,
+        redis_repository = redis_repository,
     )

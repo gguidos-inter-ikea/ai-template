@@ -1,5 +1,6 @@
 from fastapi import status
 from src.base.handlers.exception import DomainException
+from src.domains.agentverse.command_room.command_room import CommandRoomTransmitter
 
 class AgentverseDomainException(DomainException):
     """
@@ -49,7 +50,7 @@ class DuplicateAgentError(AgentverseDomainException):
     """
 
     def __init__(self, field: str, value: str, message: str = None):
-        custom_message = message or f"EVA with {field} '{value}' already exists"
+        custom_message = message or f"EVA DNA String with {field} '{value}' already presents in AEI"
         super().__init__(
             message=custom_message,
             status_code=status.HTTP_409_CONFLICT,
@@ -102,3 +103,41 @@ class InvalidComponentError(AgentverseDomainException):
                 ]
             }
         )
+
+
+async def handle_ws_exception(
+    commandroom: CommandRoomTransmitter,
+    socket_id: str,
+    exception: Exception
+) -> dict:
+    """
+    Handle exceptions in WebSocket context without raising HTTP responses.
+
+    Args:
+        commandroom: The CommandRoomTransmitter instance.
+        socket_id: The socket identifier of the client.
+        exception: The raised exception.
+
+    Returns:
+        A dictionary with error details that can be sent to the client.
+    """
+    if isinstance(exception, AgentverseDomainException):
+        await commandroom.to_socket(
+            socket_id,
+            message=f"[NERV] ❌ EVA Failure: {exception.message}"
+        )
+        return {
+            "error": exception.message,
+            "code": f"{exception.domain}.{exception.error_code}",
+            "data": exception.data
+        }
+    else:
+        await commandroom.to_socket(
+            socket_id,
+            message="[NERV] 🚨 Unknown exception occurred during EVA orchestration"
+        )
+        return {
+            "error": str(exception),
+            "code": "agentverse.UNKNOWN",
+            "data": {}
+        }

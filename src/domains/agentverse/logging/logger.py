@@ -27,3 +27,7 @@ def log_nerv_hq(message: str):
 def log_existencial_index(message: str):
     """Log from the Existencial Index (db service)."""
     AGENTVERSE_LOGGER.info(f"[🧠 EXISTENCIAL INDEX] {message}")
+
+def log_agent_existencial_core(message: str):
+    """Log from the Existencial Index (db service)."""
+    AGENTVERSE_LOGGER.info(f"[🧠 EXISTENCIAL INDEX] {message}")

@@ -20,6 +20,9 @@ from src.domains.agentverse.services.agent_service import (
 from src.domains.agentverse.services.db_service import (
     DBService
 )
+from src.domains.agentverse.services.divine_orchestration_service import (
+    DivineOrchestrationService
+)
 
 class AgentverseContainer(containers.DeclarativeContainer):
     """
@@ -45,6 +48,12 @@ class AgentverseContainer(containers.DeclarativeContainer):
         safe_get_agent_class = safe_get_agent_class
     )
 
+    divine_orchestration_service = providers.Factory(
+        DivineOrchestrationService,
+        agent_service = agent_service,
+        db_service = db_service
+    )
+
 def extend_container(base_container: BaseContainer) -> BaseContainer:
     agentverse_container = AgentverseContainer()# <-- safe override here
 
@@ -52,6 +61,8 @@ def extend_container(base_container: BaseContainer) -> BaseContainer:
         "src.domains.agentverse.dependencies.get_db_service",
         "src.domains.agentverse.dependencies.get_agent_service",
         "src.domains.agentverse.interfaces.api.v1.interface",
+        "src.domains.agentverse.dependencies.get_divine_orchestration_service",
+        "src.domains.agentverse.services.divine_orchestration_service",
     ])
 
     base_container.agent_service = agentverse_container.agent_service
