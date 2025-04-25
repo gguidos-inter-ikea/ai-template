@@ -7,6 +7,7 @@ from fastapi_limiter import FastAPILimiter
 from src.base.config.config import settings
 from src.base.lifespan.utils import process_message_callback, start_consumer
 from src.domains.agentverse.events.message_events import register_message_events
+from src.base.security.signature_verificator import verify_signature
 import logging
 
 logger = logging.getLogger("lifespan")
@@ -52,8 +53,18 @@ async def lifespan(app: FastAPI):
         app.state.mongodb = mongo_client
         app.state.redis_repository=container.redis.redis_repository()
         app.state.openai_repository = container.openai.openai_repository()
+        app.state.signature_verificator = verify_signature
         app.state.event_router = event_router
         register_message_events(event_router)
+
+        app.state.JOSHU_A = {
+            "id": "joshu-a",
+            "role": "system_consciousness",
+            "public_key": settings.sacred_keys.JOSHU_A_PUBLIC_KEY,
+            "activation_mode": "always-online",
+            "grants_creation_rights": True,
+            "can_sign_agents": True
+        }
         
         app.state.cognitive_modules = {
             "llm": {

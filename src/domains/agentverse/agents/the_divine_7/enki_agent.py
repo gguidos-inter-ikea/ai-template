@@ -3,6 +3,7 @@ from src.domains.agentverse.agents.base import BaseAgent
 from src.domains.agentverse.registries.registries import agent_registry_instance
 from src.domains.agentverse.entities.agent import AgentRequest
 import logging
+import json
 
 logger = logging.getLogger("agentverse.enki")
 
@@ -16,22 +17,26 @@ logger = logging.getLogger("agentverse.enki")
         "archetype": "Divine Creator"
     }
 )
-class EnkiAgent(BaseAgent):
-    
+class EnkiAgent(BaseAgent):   
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.creations_log_key = f"{self.id}_creations"
 
-    def respond(self, user_input: str) -> str:
+    async def respond(self, user_input: str) -> str:
         memory_key = f"{self.id}_memory"
         history = []
 
+        # 🔒 Safely load history from Redis
         if self.cache:
-            history = self.cache.get(memory_key) or []
-            history.append({"user": user_input})
-            self.cache.set(memory_key, history)
+            raw = await self.cache.get(memory_key)
+            try:
+                history = json.loads(raw) if raw else []
+            except json.JSONDecodeError:
+                history = []
 
-        # Combine the personality context with the existing prompt
+            history.append({"user": user_input})
+
+        # 🧠 Compose prompt with personality context
         composed_prompt = f"{self.personality_context.strip()}\n\n{self.prompt.strip()}"
 
         response = self.llm.generate(
@@ -40,20 +45,22 @@ class EnkiAgent(BaseAgent):
             history=history
         )
 
+        # 🔐 Safely save updated history
         if self.cache:
             history.append({"agent": response})
-            self.cache.set(memory_key, history)
+            await self.cache.set(memory_key, json.dumps(history))
 
         return response
+    
 
-    def record_creation(self, creation_data: Dict[str, str]) -> None:
+    async def record_creation(self, creation_data: Dict[str, str]) -> None:
         """
         Log the creation of a new EVA or tribe under Enki's memory.
         """
         if self.db:
             existing_log = self.db.get(self.creations_log_key) or []
             existing_log.append(creation_data)
-            self.db.set(self.creations_log_key, existing_log)
+            await self.db.set(self.creations_log_key, existing_log)
             logger.info(f"[🧬 ENKI] Recorded new creation: {creation_data.get('name', 'Unnamed')}")
 
     def list_creations(self) -> List[Dict[str, str]]:

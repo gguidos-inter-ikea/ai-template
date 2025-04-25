@@ -3,7 +3,7 @@ from typing import Optional, List
 
 
 # 🛠️ Simulation Metadata & Symbolism
-class SimulationProfile(BaseModel):
+class PersonalProfile(BaseModel):
     gender_identity: Optional[str] = "neutral"
     pregnancy_status: Optional[bool] = False
     marital_status: Optional[str] = "single"

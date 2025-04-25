@@ -111,7 +111,7 @@ class AgentService:
         log_operations_commander(f"[🔬 EVA ASSEMBLY] Blueprinting { agent_config.name } completed")
         return agent
     
-    def build_agent(self, request, db_agent: DBAgentPost) -> DBAgentPost:
+    async def build_agent(self, request, db_agent: DBAgentPost) -> DBAgentPost:
         """
         Constructs an EVA agent from the given database agent blueprint.
         
@@ -127,7 +127,7 @@ class AgentService:
         """
         log_operations_commander(f"[🔧 EVA CONSTRUCTION] Initiating core assembly for '{db_agent.agent_name}'")
         
-        agent = self.agent_factory.build_agent(request, db_agent)
+        agent = await self.agent_factory.build_agent(request, db_agent)
 
         if not agent:
             log_operations_commander(f"[❌ EVA CONSTRUCTION] Failed to construct '{db_agent.agent_name}'.")
@@ -137,8 +137,8 @@ class AgentService:
         return agent
 
     
-    def execute_task(self, message, agent):
+    async def execute_task(self, message, agent):
         if agent is None:
-            raise RuntimeError("Agent construction failed — factory returned None.")
-        
-        return agent.respond(message)
+            raise RuntimeError("Agent task execution failed — factory returned None.")
+    
+        return await agent.respond(message)

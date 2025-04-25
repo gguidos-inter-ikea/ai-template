@@ -13,7 +13,9 @@ def session_based_ws(on_ready=None, inject_request=False):
             
             token = websocket.headers.get("Authorization", "")
             commander_flag = websocket.headers.get("commander", "false").lower() == "true"
+            signature_text = websocket.headers.get("signature", "")
             websocket.scope["commander"] = commander_flag
+            websocket.scope["signature"] = signature_text
             
             if token.startswith("Bearer "):
                 jwt_token = token.replace("Bearer ", "")

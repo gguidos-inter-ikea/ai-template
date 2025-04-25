@@ -10,30 +10,21 @@ from src.domains.agentverse.entities.agent_soul_protocol_parts.sensory_profile i
 from src.domains.agentverse.entities.agent_soul_protocol_parts.simulation_profile import SimulationProfile
 from src.domains.agentverse.entities.agent_soul_protocol_parts.spiritual_profile import SpiritualProfile
 
-class agent_soul_protocol(BaseModel):
+
+class AgentSoulProtocol(BaseModel):
     """
     Agent Soul Protocol (ASP) - The core framework for agent creation and management.
-    
-    This module defines the structure and behavior of agents within the AgentVerse.
-    It includes the identity profile, memory management, and interaction protocols.
-    
-    Attributes:
-        identity_profile (IdentityProfile): The identity and origin of the agent.
-        memory (Memory): The memory management system for the agent.
-        interaction_protocol (InteractionProtocol): The communication and interaction methods.
     """
-    
 
-    
-    cognitive_profile = CognitiveProfile
-    culinary_profile = CulinaryProfile
-    cultural_profile = CulturalProfile
-    economic_profile = EconomicProfile
-    expression_profile = ExpressionProfile
-    identity_profile = IdentityProfile
-    personal_profile = PersonalProfile
-    sensory_profile = SensoryProfile
-    simulation_profile = SimulationProfile
-    spiritual_profile = SpiritualProfile
+    cognitive_profile: CognitiveProfile = CognitiveProfile()
+    culinary_profile: CulinaryProfile = CulinaryProfile()
+    cultural_profile: CulturalProfile = CulturalProfile()
+    economic_profile: EconomicProfile = EconomicProfile()
+    expression_profile: ExpressionProfile = ExpressionProfile()
+    identity_profile: IdentityProfile = IdentityProfile()
+    personal_profile: PersonalProfile = PersonalProfile()
+    sensory_profile: SensoryProfile = SensoryProfile()
+    simulation_profile: SimulationProfile = SimulationProfile()
+    spiritual_profile: SpiritualProfile = SpiritualProfile()
 
-    model_config = ConfigDict(extra="allow")
+    model_config: ConfigDict = ConfigDict(extra="allow")

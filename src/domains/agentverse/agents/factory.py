@@ -2,6 +2,8 @@ import uuid
 from typing import Any, Callable
 from dataclasses import dataclass
 from fastapi import Request
+import re
+import unicodedata
 from src.domains.agentverse.entities.agent import (
     Agent,
     AgentConfig,
@@ -61,6 +63,7 @@ class AgentFactory:
             agent = Agent(
                 id=agent_id,
                 name=agent_config.name,
+                system_name=self.to_system_name(agent_config.name),
                 prompt=agent_config.prompt,
                 type=agent_config.type,
                 chat_url=chat_url,
@@ -81,7 +84,7 @@ class AgentFactory:
             log_evangelion_bay(f"[🔥 EVA CREATION FAILURE] Encountered issue during agent creation for '{agent_config.name}': {str(e)}")
             raise
 
-    def build_agent(self, request: Request, db_agent: DBAgentPost) -> BaseAgent:
+    async def build_agent(self, request: Request, db_agent: DBAgentPost) -> BaseAgent:
         log_evangelion_bay(f"[⚙️ EVA CONSTRUCTION] Initializing assembly process for '{db_agent.agent_name}'")
 
         agent_cognitive_resources = self._resolve_components(request, db_agent)
@@ -93,6 +96,7 @@ class AgentFactory:
             id=db_agent.agent_id,
             creator=db_agent.creator,
             name=db_agent.agent_name,
+            system_name=db_agent.agent_system_name,
             type=db_agent.agent_type,
             prompt=db_agent.agent_prompt,
             personality=db_agent.agent_personality,
@@ -107,6 +111,8 @@ class AgentFactory:
         )
 
         agent = agent_class(**agent_config.dict())
+        await agent.mark_spawned()
+
         log_evangelion_bay(f"[⚙️ EVA CONSTRUCTION] Core assembly for '{db_agent.agent_name}' completed")
         log_evangelion_bay(f"""
             [⚙️ EVA CONSTRUCTION] :: {db_agent.agent_name}
@@ -148,3 +154,31 @@ class AgentFactory:
             vectordb=vectordb,
             messaging=messaging
         )
+
+
+
+    def to_system_name(self, name: str) -> str:
+        """
+        Normalize and convert a human-readable agent name to a clean, system-friendly identifier.
+
+        Steps:
+        - Normalize Unicode characters to ASCII (NFKD)
+        - Remove non-alphanumeric characters except spaces
+        - Replace spaces with underscores
+        - Lowercase everything
+
+        Example:
+            "Ingvar Kamprád!" → "ingvar_kamprad"
+            "  Customized EVA  " → "customized_eva"
+        """
+        # Normalize to NFKD form and strip diacritics
+        normalized = unicodedata.normalize("NFKD", name)
+        ascii_str = normalized.encode("ascii", "ignore").decode("ascii")
+
+        # Remove unwanted symbols (keep letters, numbers, and spaces)
+        cleaned = re.sub(r"[^a-zA-Z0-9 ]+", "", ascii_str)
+
+        # Replace spaces with underscores and lower the case
+        system_name = cleaned.strip().lower().replace(" ", "_")
+        
+        return system_name

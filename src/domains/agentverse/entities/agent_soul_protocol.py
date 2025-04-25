@@ -1,14 +1,44 @@
 from pydantic import BaseModel, Field, ConfigDict
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Any, Set
 from datetime import datetime
 
-
 class AgentSoulProtocol(BaseModel):
+
+    def to_minimal_dict(self, include_fields: Optional[Set[str]] = None) -> Dict[str, Any]:
+        """
+        Return a minimal dictionary of non-null values. If include_fields is provided,
+        only those fields will be included (if non-null).
+        """
+        data = self.model_dump(exclude_none=True)
+        if include_fields:
+            return {k: v for k, v in data.items() if k in include_fields}
+        return data
+    
+    def smart_dump(self) -> Dict[str, Any]:
+        return self.model_dump(
+            exclude_none=True,
+            exclude_unset=True,
+            exclude_defaults=True
+        )
+    
     # 🧬 Identity & Origin
     name: Optional[str] = "Customized EVA"  # Unique identifier or archetype name
+    system_name: Optional[str] = "customized_eva"  # System name for the agent
     description: Optional[str] = None  # Optional textual summary or backstory
     origin: Optional[str] = None  # e.g., "Mesopotamian Mythology", "AI Research Lab"
     created_at: datetime = Field(default_factory=datetime.now)
+
+    # 🔐 Security & Access Control
+    access_mode: Optional[str] = "public"  # Options: "public", "commander", "ritual", "guardian", "offline"
+    public_key: Optional[str] = None  # distributed for verification
+    private_key: Optional[str] = None # kept encrypted, used to sign memory, DNA merges
+    whitelist_users: Optional[List[str]] = None  # Usernames or session keys allowed
+    blacklist_users: Optional[List[str]] = None  # Users explicitly denied
+
+    unlock_phrase: Optional[str] = None  # For "ritual" mode: symbolic or verbal key
+    availability_schedule: Optional[Dict[str, str]] = None  # {"from": "09:00", "to": "17:00"} or {"weekday": "Sunday"}
+    activation_conditions: Optional[Dict[str, str]] = None  # e.g., {"location": "lab", "role": "developer"}
+    security_protocol_log: Optional[List[str]] = Field(default_factory=list)
 
     # 🧠 Emotional & Cognitive Traits
     optimism_level: Optional[float] = 0.5  # [0.0 - 1.0] — Hopefulness vs. pessimism

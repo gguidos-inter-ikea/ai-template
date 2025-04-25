@@ -12,6 +12,10 @@ class EventRouter:
 
     def get(self, event_name: str) -> Callable[..., Awaitable]:
         return self._handlers.get(event_name)
+    
+    @property
+    def handlers(self):
+        return self._handlers
 
     def all_events(self) -> Dict[str, Callable[..., Awaitable]]:
         return self._handlers

@@ -59,33 +59,25 @@ class MongoDBRepository(Generic[T]):
         
         return self.collection
 
-    async def create(self, data: T, collection_name:str) -> str:
+    async def create(self, data: T, collection_name: str) -> str:
         """
-        Create a new document.
-        
-        Args:
-            data: The document data to insert
-            
-        Returns:
-            str: The ID of the created document
+        Create a new document and return the agent's `agent_id` field instead of Mongo `_id`.
         """
-        # Ensure we have a valid collection
         collection = await self.ensure_connected(collection_name)
-            
-        # Make a copy to avoid modifying the original
         data_copy = data.copy()
-        
-        # Remove _id if it is None or not set
+
+        # Clean _id if present but None
         if "_id" in data_copy and data_copy["_id"] is None:
             del data_copy["_id"]
-        
+
         # Add timestamps
-        data_copy["created"] = data_copy.get("created", datetime.now())
-        data_copy["modified"] = data_copy.get("modified", datetime.now())
-        
-        # Insert the document
-        doc_id = await self.client.insert_one(data_copy, collection)
-        return str(doc_id)
+        now = datetime.now()
+        data_copy["created"] = data_copy.get("created", now)
+        data_copy["modified"] = data_copy.get("modified", now)
+
+        await self.client.insert_one(data_copy, collection)
+
+        return str(data_copy.get("agent_id"))  # ✅ Return the agent's id
 
     async def find_all(self, collection_name: str) -> List[T]:
         """

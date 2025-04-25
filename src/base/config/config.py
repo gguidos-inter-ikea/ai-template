@@ -10,22 +10,24 @@ from src.base.config.security_config import SecurityConfig
 from src.base.config.text_config import TextConfig
 from src.base.config.text.config import TextConfigNew
 from src.base.config.chromadb_config import ChromaDBSettings
+from src.base.config.sacred_keys import SacredKeys
 class Settings:
     """
     Aggregated settings for the application.
     """
     def __init__(self):
-        self.event_config = EventConfig(self)
-        self.ai_models = AiModelsConfig()
-        self.application = ApplicationConfig()
-        self.cache = CacheSettings()
-        self.database = DatabaseSettings()
-        self.logging = LogConfig()
-        self.messaging = MessagingConfig()
-        self.monitoring = MonitoringSettings(self.logging)
-        self.security = SecurityConfig()
+        self.event_config: EventConfig = EventConfig(self)
+        self.ai_models: AiModelsConfig = AiModelsConfig()
+        self.application: ApplicationConfig = ApplicationConfig()
+        self.cache: CacheSettings = CacheSettings()
+        self.database: DatabaseSettings = DatabaseSettings()
+        self.logging: LogConfig = LogConfig()
+        self.messaging: MessagingConfig = MessagingConfig()
+        self.monitoring: MonitoringSettings = MonitoringSettings(self.logging)
+        self.security: SecurityConfig = SecurityConfig()
         self.texts = TextConfig()
         self.textsNew = TextConfigNew()
-        self.chromadb = ChromaDBSettings()
+        self.chromadb: ChromaDBSettings = ChromaDBSettings()
+        self.sacred_keys: SacredKeys = SacredKeys()
 
 settings = Settings()

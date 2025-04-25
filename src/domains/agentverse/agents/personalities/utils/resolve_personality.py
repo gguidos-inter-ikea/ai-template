@@ -19,13 +19,13 @@ def resolve_personality(agent_config: AgentConfig) -> AgentSoulProtocol:
             log_evangelion_bay(f"[🧬 PROFILE BINDING] Retrieved '{agent_config.personality_profile}' from Personality Registry.")
             return profile_class()
         except KeyError:
-            log_evangelion_bay(f"[❌ PROFILE MISSING] Unknown profile '{agent_config.personality_profile}' — fallback to Generic EVA.")
+            log_evangelion_bay(f"[❌ PROFILE MISSING] Unknown profile '{agent_config.personality_profile}' — fallback to 'empty_eva'.")
 
-    # Priority 3: Fallback to Mortal EVA
+    # Priority 3: Fallback to 'empty_eva' if all else fails
     try:
-        fallback = personality_registry_instance.get("Mortal EVA")
-        log_evangelion_bay("[🌑 NO TRAITS FOUND] No profile provided — defaulting to 'Mortal EVA'.")
+        fallback = personality_registry_instance.get("empty_eva")
+        log_evangelion_bay("[🌑 NO TRAITS FOUND] No profile provided — defaulting to 'empty_eva'.")
         return fallback()
     except KeyError:
-        log_evangelion_bay("[💀 CRITICAL] Fallback profile 'Mortal EVA' not found in Personality Registry.")
-        raise RuntimeError("EVA personality resolution failed — 'Mortal EVA' profile is missing.")
+        log_evangelion_bay("[💀 CRITICAL] Fallback profile 'empty_eva' not found in Personality Registry.")
+        raise RuntimeError("EVA personality resolution failed — 'empty_eva' profile is missing.")

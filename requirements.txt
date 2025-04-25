@@ -12,6 +12,9 @@ dependency-injector>=4.0.0
 # JWT
 python-jose>=3.4.0
 
+# cryptography
+cryptography>=44.0.2
+
 # Database
 aioredis>=2.0.1
 redis>=5.0.0

@@ -6,7 +6,7 @@ from src.domains.agentverse.registries import personality_registry_instance
 
 @personality_registry_instance.register(name="Mortal EVA", description="Generic EVA Prototype")
 class MortalEVA(AgentSoulProtocol):
-    name: str = "Mortal EVA"
+    name: str = "mortal_eva"
     description: Optional[str] = "A foundational EVA prototype with balanced and neutral traits."
     origin: Optional[str] = "NERV-Core"
     optimism_level: float = 0.5

@@ -14,6 +14,7 @@ class BaseAgent(ABC):
         id: str,
         creator: str,
         name: str,
+        system_name: str,
         type: str,
         prompt: str,
         llm: Any,
@@ -34,6 +35,7 @@ class BaseAgent(ABC):
         self.id = id
         self.creator = creator
         self.name = name
+        self.system_name = system_name
         self.type = type
         self.prompt = prompt
         self.llm = llm
@@ -47,6 +49,7 @@ class BaseAgent(ABC):
         self.personality = personality
         self.dna_sequence = dna_sequence
         self.personality_context = generate_personality_context(personality)
+
         # self.wallets = wallets  # ← attribute name matches below
         log_existencial_index(
             f"[🧬 EVA DNA CONSTRUCTION] EVA '{name}' is ready for activation."
@@ -57,6 +60,36 @@ class BaseAgent(ABC):
         """Process an input and return a response."""
         pass
 
+    async def mark_spawned(self):
+        self.spawned = True
+        if self.cache:
+            await self.cache.set(f"agent:{self.id}:spawned", "true", expiration=3600)
+            
+    async def sleep(self):
+        self.spawned = False
+        if self.cache:
+            await self.cache.delete(f"agent:{self.id}:spawned")
+
+    async def remember(self, key: str, value: Any):
+        if self.cache:
+            await self.cache.set(f"agent:{self.id}:{key}", value)
+
+    async def recall(self, key: str, default: Any = None) -> Any:
+        if self.cache:
+            result = await self.cache.get(f"agent:{self.id}:{key}")
+            return result if result is not None else default
+        return default
+
+    async def forget(self, key: str):
+        if self.cache:
+            await self.cache.delete(f"agent:{self.id}:{key}")
+
+    async def is_spawned(self) -> bool:
+        if self.cache:
+            value = await self.cache.get(f"agent:{self.id}:spawned")
+            return value == "true"
+        return self.spawned  # fallback to in-memory flag
+    
     async def listen_for_name(self):
         """
         Subscribes this agent to Redis messages sent to its own name channel via the communication bridge.
@@ -65,8 +98,8 @@ class BaseAgent(ABC):
             logger.warning(f"[⚠️] Agent {self.name} has no communication bridge with Redis access.")
             return
 
-        channel = f"agent:{self.name.lower()}"
-        logger.info(f"[👂] {self.name} is now listening on Redis channel: {channel}")
+        channel = f"agent:{self.system_name.lower()}"
+        logger.info(f"[👂] {self.system_name} is now listening on Redis channel: {channel}")
 
         async def message_handler():
             async for message in self.commbridge.redis_repository.subscribe_channel(channel):
@@ -90,6 +123,7 @@ class BaseAgent(ABC):
             "id": self.id,
             "creator": self.creator,
             "name": self.name,
+            "system_name": self.system_name,
             "type": self.type,
             "prompt": self.prompt,
             "llm_type": getattr(self.llm, "model_name", str(self.llm)),

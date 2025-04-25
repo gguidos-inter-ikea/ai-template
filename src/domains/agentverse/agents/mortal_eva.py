@@ -4,7 +4,7 @@ from src.domains.agentverse.agents.base import BaseAgent
 from src.domains.agentverse.registries.registries import agent_registry_instance
 
 @agent_registry_instance.register(
-    name="chat",
+    name="mortal_eva",
     description="Conversational agent that responds with a friendly tone and stores short-term memory.",
     version="1.0.0",
     metadata={

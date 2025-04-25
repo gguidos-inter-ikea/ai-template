@@ -35,23 +35,27 @@ class DBService:
         return
 
     async def store_agent(self, request: Request, db_agent: DBAgent):
-        db_repository = request.app.state.cognitive_modules["db"]["mongodb"] 
+        db_repository = request.app.state.cognitive_modules["db"]["mongodb"]
         collection_name = 'coll_agents'
         genesis_seal = db_agent.agent.id[:6]
+
         try:
-            # 🕯️ STAGE I: Invocation of the Forbidden Protocol
             log_existencial_index(
                 f"[🕯️ INDEXING RITUAL] Initiating inscription of EVA '{db_agent.agent.name}' into the Agentverse Existential Index [AEI] — soul-seed seal: '{genesis_seal}'"
             )
 
-            # ☣️ STAGE II: Core Pattern Extraction
             log_existencial_index(
                 f"[☣️ NEURAL ENGRAVING] Extracting fragmented memory lattice from EVA prototype '{db_agent.agent.name}' for eternal preservation"
             )
+
+            # 🌱 No assumptions — just dump the meaningful traits
+            personality_dump = db_agent.agent.personality.model_dump(exclude_none=True)
+            
             data = {
                 "creator": db_agent.user_id,
                 "agent_id": db_agent.agent.id,
                 "agent_name": db_agent.agent.name,
+                "agent_system_name": db_agent.agent.system_name,
                 "agent_type": db_agent.agent.type,
                 "agent_prompt": db_agent.agent.prompt,
                 "agent_chat_url": db_agent.agent.chat_url,
@@ -60,10 +64,9 @@ class DBService:
                 "agent_cache_type": db_agent.agent.cache_type,
                 "agent_knowledge_db_type": db_agent.agent.knowledge_db_type,
                 "agent_messaging_type": db_agent.agent.messaging_type,
-                "agent_personality": db_agent.agent.personality.model_dump(),
+                "agent_personality": personality_dump,
                 "agent_personality_profile": db_agent.agent.personality_profile,
                 "agent_dna_sequence": db_agent.agent.dna_sequence,
-
             }
 
             log_existencial_index(
@@ -71,9 +74,12 @@ class DBService:
             )
 
             return await db_repository.create(data, collection_name)
+
         except Exception as e:
             log_existencial_index(f"[🔥 EXCEPTION] Failed to inscribe EVA '{db_agent.agent.name}' into AEI: {str(e)}")
             raise
+
+
 
     async def find_one(self, request, query) -> Optional[T]:
         db_repository = request.app.state.cognitive_modules["db"]["mongodb"] 

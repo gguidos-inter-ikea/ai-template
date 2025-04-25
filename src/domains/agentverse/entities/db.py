@@ -6,6 +6,7 @@ class DBAgentPost(BaseModel):
     creator: str
     agent_id: str
     agent_name: str
+    agent_system_name: str
     agent_type: str
     agent_prompt: str
     agent_llm_type: str

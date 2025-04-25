@@ -93,7 +93,7 @@ async def chat_with_agent(
     log_command_room(f"[🔎 DNA] Retrieval of genetic memory core for '{id}' — confirmed.")
     
     log_command_room("[⚙️ SYNC] Cognitive matrix reconstruction initiated.")
-    built_agent = agent_service.build_agent(request=request, db_agent=db_agent)
+    built_agent = await agent_service.build_agent(request=request, db_agent=db_agent)
 
     log_command_room(f"[🌌 DIV-OPS] '{id}' synchronized. Soul-link established. Operational awareness initiated.")
     

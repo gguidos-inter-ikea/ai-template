@@ -9,7 +9,7 @@ class AgentRequest(BaseModel):
     prompt: str
     llm_type: Optional[str] = "openai"
     db_type: Optional[str] = None
-    cache_type: Optional[str] = None
+    cache_type: Optional[str] = "redis"
     knowledge_db_type: Optional[str] = None
     messaging_type: Optional[str] = None
     personality_profile: Optional[str] = Field('Mortal EVA', alias="personality_profile")
@@ -32,6 +32,7 @@ class BaseAgentConfig(BaseModel):
     id: str
     creator: str
     name: str
+    system_name: str
     type: str
     prompt: str
     llm: Any
@@ -47,6 +48,7 @@ class BaseAgentConfig(BaseModel):
 class Agent(BaseModel):
     id: str
     name: str
+    system_name: str
     type: str
     prompt: str
     chat_url: str
