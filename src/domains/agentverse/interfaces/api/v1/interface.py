@@ -6,7 +6,9 @@ from src.domains.agentverse.entities.agent import (
 )
 from src.domains.agentverse.dependencies.get_agent_service import get_agent_service
 from src.domains.agentverse.dependencies.get_db_service import get_db_service
+from src.domains.agentverse.dependencies.get_registry_service import get_registry_service
 from src.domains.agentverse.services.agent_service import AgentService
+from src.domains.agentverse.services.registry_service import RegistryService
 from src.domains.agentverse.services.db_service import DBService
 from src.domains.agentverse.logging.logger import log_command_room
 from src.domains.agentverse.entities.db import DBAgentPost
@@ -73,6 +75,16 @@ async def find_all_agents(
 ):
     
     results = await db_service.find_all(request)
+
+    return results
+
+@router.get("/api/v1/agents/registry/{type}")
+async def get_agent_types(
+    type: str,
+    registry_service: RegistryService = Depends(get_registry_service)
+):
+    
+    results = registry_service.list(type, include_metadata=True)
 
     return results
 

@@ -1,9 +1,12 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Any, Dict, Optional, List
+from src.domains.agentverse.tools.base import ToolExecutionError
 from src.domains.agentverse.agents.personalities.utils.generate_personality_context import (
     generate_personality_context,
 )
+from src.domains.agentverse.entities.tools.tool_spec import ToolSpec
 from src.domains.agentverse.logging.logger import log_existencial_index
+from src.domains.agentverse.tools.base import BaseTool
 import asyncio
 import logging
 
@@ -27,6 +30,12 @@ class BaseAgent(ABC):
         personality_profile: str = None,
         personality: Any = None,
         dna_sequence: str = None,
+        access_mode: str = "public",
+        public_key: Optional[str] = None,
+        private_key: Optional[str] = None,
+        whitelist_users: Optional[List[str]] = None,
+        blacklist_users: Optional[List[str]] = None,
+        tools: List[ToolSpec] = None,
         # wallets: List[Wallet] = None
     ):
         log_existencial_index(
@@ -47,8 +56,15 @@ class BaseAgent(ABC):
         self.chat_url = chat_url  # ← fixed here
         self.personality_profile = personality_profile
         self.personality = personality
+        self.access_mode = access_mode
+        self.public_key = public_key
+        self.private_key = private_key
+        self.whitelist_users = whitelist_users
+        self.blacklist_users = blacklist_users
         self.dna_sequence = dna_sequence
         self.personality_context = generate_personality_context(personality)
+        self.tool_specs: List[ToolSpec] = tools or []
+        self.tools: Dict[str, BaseTool] = {}
 
         # self.wallets = wallets  # ← attribute name matches below
         log_existencial_index(
@@ -116,6 +132,21 @@ class BaseAgent(ABC):
 
     def on_event(self, event_name: str):
         return event_name
+
+    async def _chat_completion(self, user_input: str) -> str:
+        # … assemble messages & call LLM …
+        raw = (await self.llm.generate_response(...)).content
+
+        # now run guardrails if present
+        guard = self.tools.get("guardrail")
+        if guard and guard.config.enabled:
+            try:
+                filtered = (await guard.execute(content=raw)).result
+                return filtered
+            except ToolExecutionError:
+                # fail open or closed, up to your policy
+                return raw  
+        return raw
 
     def to_dict(self) -> Dict[str, Any]:
         """Export all core agent attributes in a safe, readable dictionary format."""

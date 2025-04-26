@@ -64,10 +64,18 @@ class DBService:
                 "agent_cache_type": db_agent.agent.cache_type,
                 "agent_knowledge_db_type": db_agent.agent.knowledge_db_type,
                 "agent_messaging_type": db_agent.agent.messaging_type,
+                "agent_access_mode": db_agent.agent.access_mode,
+                "agent_public_key": db_agent.agent.public_key,
+                "agent_private_key": db_agent.agent.private_key,
+                "agent_whitelist_users": db_agent.agent.whitelist_users,
+                "agent_blacklist_users": db_agent.agent.blacklist_users,
+                "agent_tools": [ ts.model_dump() for ts in db_agent.agent.tools ],
                 "agent_personality": personality_dump,
                 "agent_personality_profile": db_agent.agent.personality_profile,
                 "agent_dna_sequence": db_agent.agent.dna_sequence,
             }
+
+            log_existencial_index(f"{data}")
 
             log_existencial_index(
                 f"[🔒 AEI LOCK] EVA '{db_agent.agent.name}' has been eternally bound to the Agentverse lattice — DNA string engraved and archived"

@@ -1,6 +1,7 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from src.domains.agentverse.entities.agent_soul_protocol import AgentSoulProtocol
+from src.domains.agentverse.entities.tools.tool_spec import ToolSpec
 
 class DBAgentPost(BaseModel):
     creator: str
@@ -16,5 +17,12 @@ class DBAgentPost(BaseModel):
     agent_messaging_type: Optional[str] = None
     agent_personality: AgentSoulProtocol
     agent_personality_profile: str
+    agent_access_mode: Optional[str] = "public"  # Options: "public", "commander", "ritual", "guardian", "offline"
+    agent_public_key: Optional[str] = None  # distributed for verification
+    agent_private_key: Optional[str] = None # kept encrypted, used to sign memory, DNA merges
+    agent_whitelist_users: Optional[List[str]] = None  # Usernames or session keys allowed
+    agent_blacklist_users: Optional[List[str]] = None  # Users explicitly denied
+    agent_tools: List[ToolSpec]
     agent_dna_sequence: str
     agent_chat_url: str
+    tools: Optional[List[str]] = None  # List of tool names

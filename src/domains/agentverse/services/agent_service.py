@@ -68,7 +68,6 @@ class AgentService:
             "[✅ SYNCHRONIZATION STABLE] Core configuration passed resonance scan — cognitive core alignment successful."
         )
 
-    
     async def agent_config(
             self,
             agent_request: AgentRequest,
@@ -81,6 +80,7 @@ class AgentService:
             message=f"[OP COMMANDER][🔬 EVA ASSEMBLY] Sequencing DNA for prototype type '{agent_request.type}'"
         )
         log_operations_commander(f"[🔬 EVA ASSEMBLY] Sequencing DNA for prototype type '{agent_request.type}'")
+        
         agent_config = AgentConfig(
             user_id = agent_request.user_id,
             name=agent_request.name,
@@ -91,6 +91,12 @@ class AgentService:
             cache_type=agent_request.cache_type,
             knowledge_db_type=agent_request.knowledge_db_type,
             personality_profile=agent_request.personality_profile,
+            access_mode=agent_request.access_mode,
+            public_key=agent_request.public_key,
+            private_key=agent_request.private_key,
+            whitelist_users=agent_request.whitelist_users,
+            blacklist_users=agent_request.blacklist_users,
+            tools=agent_request.tools,
             personality=agent_request.personality,
             messaging_type=agent_request.messaging_type
 

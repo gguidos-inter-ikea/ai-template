@@ -2,6 +2,10 @@ from dependency_injector import containers, providers
 from src.base.dependencies.di_container import Container as BaseContainer
 from src.domains.agentverse.utils.safe_get_agent_class import safe_get_agent_class
 from src.domains.agentverse.agents.utils.get_agent_class import get_agent_class
+from src.domains.agentverse.registries.registries import registries
+from src.domains.agentverse.services.registry_service import (
+    RegistryService
+)
 from src.domains.agentverse.utils.generate_dna_sequence import (
     generate_dna_sequence
 )
@@ -48,6 +52,11 @@ class AgentverseContainer(containers.DeclarativeContainer):
         safe_get_agent_class = safe_get_agent_class
     )
 
+    registry_service = providers.Singleton(
+        RegistryService,
+        registries=providers.Object(registries)
+    )
+
     divine_orchestration_service = providers.Factory(
         DivineOrchestrationService,
         agent_service = agent_service,
@@ -63,6 +72,7 @@ def extend_container(base_container: BaseContainer) -> BaseContainer:
         "src.domains.agentverse.interfaces.api.v1.interface",
         "src.domains.agentverse.dependencies.get_divine_orchestration_service",
         "src.domains.agentverse.services.divine_orchestration_service",
+        "src.domains.agentverse.dependencies.get_registry_service",
     ])
 
     base_container.agent_service = agentverse_container.agent_service

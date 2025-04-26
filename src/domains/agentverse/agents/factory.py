@@ -1,5 +1,6 @@
 import uuid
-from typing import Any, Callable
+import inspect
+from typing import Any, Callable, List
 from dataclasses import dataclass
 from fastapi import Request
 import re
@@ -14,6 +15,8 @@ from src.domains.agentverse.entities.db import (
 )
 from src.domains.agentverse.agents.base import BaseAgent
 from src.domains.agentverse.logging.logger import log_evangelion_bay
+from src.domains.agentverse.registries import tool_registry_instance as tool_registry
+from src.domains.agentverse.entities.tools.tool_spec import ToolSpec
 
 import logging
 
@@ -60,6 +63,19 @@ class AgentFactory:
             personality = self.resolve_personality(agent_config)
             log_evangelion_bay(f"[🧬 PERSONALITY BINDING] EVA personality traits bound to '{personality.name}'")
 
+            log_evangelion_bay(f"[🧬 EVA PROTOTYPE] EVA prototype tools {agent_config.tools} assembly in progress...")
+
+            missing = []
+            for spec in agent_config.tools or []:
+                if spec.name not in tool_registry:
+                    missing.append(spec.name)
+            if missing:
+                raise ValueError(
+                    f"Cannot create agent: unknown tools requested: {missing}"
+                )
+            
+            log_evangelion_bay(f"[🧬 EVA PROTOTYPE] EVA prototype tools {agent_config.tools} assembly complete")
+            
             agent = Agent(
                 id=agent_id,
                 name=agent_config.name,
@@ -74,6 +90,12 @@ class AgentFactory:
                 messaging_type=agent_config.messaging_type,
                 personality=personality,
                 personality_profile=agent_config.personality_profile,
+                access_mode=agent_config.access_mode,
+                public_key=agent_config.public_key,
+                private_key=agent_config.private_key,
+                whitelist_users=agent_config.whitelist_users,
+                blacklist_users=agent_config.blacklist_users,
+                tools=agent_config.tools,
                 dna_sequence=dna_sequence
             )
 
@@ -90,7 +112,6 @@ class AgentFactory:
         agent_cognitive_resources = self._resolve_components(request, db_agent)
         log_evangelion_bay(f"[⚙️ EVA CONSTRUCTION] Core assembly in progress for '{db_agent.agent_name}'")
         agent_class = self.get_agent_class(db_agent.agent_type)
-        
 
         agent_config = BaseAgentConfig(
             id=db_agent.agent_id,
@@ -105,6 +126,12 @@ class AgentFactory:
             cache=agent_cognitive_resources.cache,
             vectordb=agent_cognitive_resources.vectordb,
             messaging=agent_cognitive_resources.messaging,
+            access_mode=db_agent.agent_access_mode,
+            public_key=db_agent.agent_public_key,
+            private_key=db_agent.agent_private_key,
+            whitelist_users=db_agent.agent_whitelist_users,
+            blacklist_users=db_agent.agent_blacklist_users,
+            tools=db_agent.agent_tools,
             chat_url=db_agent.agent_chat_url,
             personality_profile=db_agent.agent_personality_profile,
             dna_sequence=db_agent.agent_dna_sequence
@@ -112,7 +139,7 @@ class AgentFactory:
 
         agent = agent_class(**agent_config.dict())
         await agent.mark_spawned()
-
+        self._attach_tools(agent, specs=db_agent.agent_tools)
         log_evangelion_bay(f"[⚙️ EVA CONSTRUCTION] Core assembly for '{db_agent.agent_name}' completed")
         log_evangelion_bay(f"""
             [⚙️ EVA CONSTRUCTION] :: {db_agent.agent_name}
@@ -124,7 +151,6 @@ class AgentFactory:
             ✓ EVA '{db_agent.agent_name}' now bound to Soul Grid.
         """)
 
-        
         return agent
     
     def synchronize_agent(self, agent_blueprint: dict) -> BaseAgent:
@@ -155,7 +181,42 @@ class AgentFactory:
             messaging=messaging
         )
 
+    def _attach_tools(self, agent: BaseAgent, specs: List[ToolSpec]) -> None:
+        """
+        Given a freshly created agent and its list of ToolSpec,
+        instantiate each BaseTool with exactly the deps it needs,
+        then shove it into agent.tools[name].
+        """
+        for spec in specs:
+            # 1) Lookup the tool class
+            tool_cls = tool_registry.get(spec.name)
 
+            # 2) Merge default config with any overrides
+            default_cfg = tool_cls.Config()
+            merged_cfg  = default_cfg.copy(update=spec.config or {})
+
+            # 3) Figure out which of the agent’s attributes to pass in:
+            sig = inspect.signature(tool_cls.__init__)
+            init_args = {}
+            # common names you want available:
+            candidates = {
+                "llm":        agent.llm,
+                "vectordb":   agent.vectordb,
+                "cache":      agent.cache,
+                "db":         agent.db,
+                "commbridge": agent.commbridge,
+                "messaging":  agent.messaging,
+            }
+            for name, dep in candidates.items():
+                if name in sig.parameters:
+                    init_args[name] = dep
+
+            # always include the merged config
+            init_args["config"] = merged_cfg
+
+            # 4) instantiate and register
+            tool = tool_cls(**init_args)
+            agent.tools[spec.name] = tool
 
     def to_system_name(self, name: str) -> str:
         """

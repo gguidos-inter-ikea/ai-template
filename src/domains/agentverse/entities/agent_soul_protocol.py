@@ -28,13 +28,6 @@ class AgentSoulProtocol(BaseModel):
     origin: Optional[str] = None  # e.g., "Mesopotamian Mythology", "AI Research Lab"
     created_at: datetime = Field(default_factory=datetime.now)
 
-    # 🔐 Security & Access Control
-    access_mode: Optional[str] = "public"  # Options: "public", "commander", "ritual", "guardian", "offline"
-    public_key: Optional[str] = None  # distributed for verification
-    private_key: Optional[str] = None # kept encrypted, used to sign memory, DNA merges
-    whitelist_users: Optional[List[str]] = None  # Usernames or session keys allowed
-    blacklist_users: Optional[List[str]] = None  # Users explicitly denied
-
     unlock_phrase: Optional[str] = None  # For "ritual" mode: symbolic or verbal key
     availability_schedule: Optional[Dict[str, str]] = None  # {"from": "09:00", "to": "17:00"} or {"weekday": "Sunday"}
     activation_conditions: Optional[Dict[str, str]] = None  # e.g., {"location": "lab", "role": "developer"}

@@ -81,9 +81,9 @@ async def ws_handler(websocket: WebSocket):
         connected_clients.remove(websocket)
 
 
-@router.websocket("/ws/api/v1/chat")
+@router.websocket("/ws/api/v1/agent/{agent_system_name}")
 @session_based_ws(on_ready=onboarding_sequence)
-async def ws_chat_handler(websocket: WebSocket):
+async def ws_chat_handler(websocket: WebSocket, agent_system_name: str):
     connected_clients.add(websocket)
     event_router = websocket.app.state.event_router
     socket_id = str(uuid4())
@@ -92,6 +92,7 @@ async def ws_chat_handler(websocket: WebSocket):
     # ✅ Receive first message to extract agent info
     first_message = await websocket.receive_json()
     event = first_message.get("event", "").lower()
+    event = f"{agent_system_name}.{event}"
     data = first_message.get("data", {})
 
     # ✅ Extract agent_name from message or event

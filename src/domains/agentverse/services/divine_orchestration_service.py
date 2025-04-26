@@ -76,14 +76,14 @@ class DivineOrchestrationService:
         # 🛠️ Phase 03: Assembly
         await commandroom.to_socket(socket_id=socket_id, message=f"[NERV] [🧬 STAGE 1.3] Assembling EVA '{agent_request.name}'...")
         agent = self.agent_service.create_agent(agent_config)
+        await commandroom.to_socket(socket_id=socket_id, message=f"{agent}.")
+        
         await commandroom.to_socket(socket_id=socket_id, message=f"[NERV] ✅ EVA '{agent.name}' assembled.")
-
+        await commandroom.to_socket(socket_id=socket_id, message=f"[NERV] [🧬 STAGE 1.4] EVA '{agent}' is now in the cradle.")
         db_agent = DBAgent(user_id=agent_request.user_id, agent=agent)
+        
         inserted_agent_id = await self.db_service.store_agent(fake_request, db_agent)
 
-        # Try both approaches safely
-
-        
         await commandroom.to_socket(socket_id=socket_id, message=f"[NERV] ✅ EVA '{inserted_agent_id}' DNA string stored in the Agentverse Existence Index.")
         if not inserted_agent_id:
             raise ValueError("Could not retrieve '_id' from inserted_agent")
@@ -103,8 +103,6 @@ class DivineOrchestrationService:
 
         log_command_room(f"[🧬 COMPLETE] EVA '{spawned_agent.name}' fully deployed, tested, and archived.")
         return f"[NERV REPORT] EVA '{spawned_agent.name}' '{inserted_agent_id}' successfully deployed and synchronized."
-
-
 
     async def chat_w_agent(
         self,

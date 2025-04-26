@@ -29,7 +29,8 @@ Example Usage:
 
 from src.domains.agentverse.registries.registries import (
     agent_registry_instance,
-    personality_registry_instance
+    personality_registry_instance,
+    tool_registry_instance
 )
 from src.domains.agentverse.registries.utils.utils import get_registry, reset_registries
 
@@ -37,5 +38,6 @@ __all__ = [
     "agent_registry_instance",
     "get_registry",
     "personality_registry_instance",
+    "tool_registry_instance",
     "reset_registries"
 ]
