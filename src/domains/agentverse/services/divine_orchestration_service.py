@@ -102,7 +102,7 @@ class DivineOrchestrationService:
         await commandroom.to_socket(socket_id=socket_id, message=f"[NERV] ☑️ EVA '{spawned_agent.name}' has entered the Verse. Awaiting further orders.")
 
         log_command_room(f"[🧬 COMPLETE] EVA '{spawned_agent.name}' fully deployed, tested, and archived.")
-        return f"[NERV REPORT] EVA '{spawned_agent.name}' '{inserted_agent_id}' successfully deployed and synchronized."
+        return inserted_agent_id
 
     async def chat_w_agent(
         self,

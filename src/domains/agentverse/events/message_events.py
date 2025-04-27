@@ -38,8 +38,9 @@ def register_message_events(
                 **data
             )
             return {
+                "code": 200,
                 "status": "✅ EVA created",
-                "agent": result
+                "agent_id": result
             }
 
     # 💬 Skip dynamic agent handler if name is missing

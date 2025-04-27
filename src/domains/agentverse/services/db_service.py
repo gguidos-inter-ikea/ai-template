@@ -87,7 +87,8 @@ class DBService:
             log_existencial_index(f"[🔥 EXCEPTION] Failed to inscribe EVA '{db_agent.agent.name}' into AEI: {str(e)}")
             raise
 
-
+    async def find_by_id(self, request, agent_id):
+        return await self.find_one(request, {agent_id: agent_id})
 
     async def find_one(self, request, query) -> Optional[T]:
         db_repository = request.app.state.cognitive_modules["db"]["mongodb"] 

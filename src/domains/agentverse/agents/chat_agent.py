@@ -2,7 +2,7 @@
 
 from src.domains.agentverse.agents.base import BaseAgent
 from src.domains.agentverse.registries.registries import agent_registry_instance
-
+import json
 @agent_registry_instance.register(
     name="chat",
     description="Conversational agent that responds with a friendly tone and stores short-term memory.",
@@ -16,27 +16,30 @@ class ChatAgent(BaseAgent):
     async def respond(self, user_input: str) -> str:
         memory_key = f"{self.id}_memory"
         history = []
-        messages = []
 
+        # 🔒 Safely load history from Redis
         if self.cache:
-            history = await self.cache.get(memory_key) or []
+            raw = await self.cache.get(memory_key)
+            try:
+                history = json.loads(raw) if raw else []
+            except json.JSONDecodeError:
+                history = []
+
             history.append({"user": user_input})
-            self.cache.set(memory_key, history)
 
-        if self.personality_context:
-            messages.append({"role": "system", "content": self.personality_context})
-            messages.append({"role": "system", "content": self.prompt})
-        for turn in history:
-            messages.append({
-                "role": "user" if "user" in turn else "assistant",
-                "content": turn.get("user") or turn.get("agent")
-            })
-        messages.append({"role": "user", "content": user_input})
-        response = await self.llm.generate_response(messages=messages)
+        # 🧠 Compose prompt with personality context
+        composed_prompt = f"{self.personality_context.strip()}\n\n{self.prompt.strip()}"
 
+        response = self.llm.generate(
+            prompt=composed_prompt,
+            user_input=user_input,
+            history=history
+        )
+
+        # 🔐 Safely save updated history
         if self.cache:
             history.append({"agent": response})
-            self.cache.set(memory_key, history)
+            await self.cache.set(memory_key, json.dumps(history))
 
         return response
     

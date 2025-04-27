@@ -68,8 +68,19 @@ async def create_agent(
     inserted_agent = await db_service.store_agent(request, db_agent)
     return inserted_agent
 
-@router.get("/api/v1/agents")
+@router.get("/api/v1/agents/list")
 async def find_all_agents(
+    request: Request,
+    db_service: DBService = Depends(get_db_service)
+):
+    
+    results = await db_service.find_all(request)
+
+    return results
+
+@router.get("/api/v1/agents/id/{agent_id}")
+async def find_agent(
+    agent_id: str,
     request: Request,
     db_service: DBService = Depends(get_db_service)
 ):

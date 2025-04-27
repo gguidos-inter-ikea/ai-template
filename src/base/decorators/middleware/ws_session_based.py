@@ -11,14 +11,23 @@ def session_based_ws(on_ready=None, inject_request=False):
         async def wrapper(websocket: WebSocket, *args, **kwargs):
             await websocket.accept()
             
-            token = websocket.headers.get("Authorization", "")
+            raw_token = websocket.headers.get("Authorization", "")
+            if not raw_token:
+                # e.g. ws://…?token=abcd
+                raw_token = "Bearer " + websocket.query_params.get("token", "")
             commander_flag = websocket.headers.get("commander", "false").lower() == "true"
+            if not websocket.headers.get("commander"):
+                # fallback to query
+                commander_flag = websocket.query_params.get("commander", "false").lower() == "true"
             signature_text = websocket.headers.get("signature", "")
+            if not websocket.headers.get("signature"):
+                # fallback to query
+                signature_text = websocket.query_params.get("signature", "")
             websocket.scope["commander"] = commander_flag
             websocket.scope["signature"] = signature_text
             
-            if token.startswith("Bearer "):
-                jwt_token = token.replace("Bearer ", "")
+            if raw_token.startswith("Bearer "):
+                jwt_token = raw_token.replace("Bearer ", "")
                 domain = extract_domain_from_path(websocket.url.path)
                 session_key = get_session_key(jwt_token=jwt_token, domain=domain)
                 websocket.scope["session_key"] = session_key
