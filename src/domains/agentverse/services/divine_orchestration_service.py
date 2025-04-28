@@ -57,7 +57,7 @@ class DivineOrchestrationService:
         await emit_log(socket_id=socket_id, message=f"[NERV] [🧬 STAGE 1.1] ✅ DNA sequence generation for '{agent_request.name}' completed", commandroom=commandroom)
         log_command_room("[🧬 STAGE 1.1] DNA sequence generation completed")
 
-        await log_command_room(socket_id=socket_id, message=f"[NERV] [🧬 STAGE 1.2] Integrity Scan for EVA: '{agent_request.name}'", commandroom=commandroom)
+        log_command_room(message=f"[NERV] [🧬 STAGE 1.2] Integrity Scan for EVA: '{agent_request.name}'")
         fake_request = SimpleNamespace()
         fake_request.app = websocket.app
 
@@ -108,10 +108,16 @@ class DivineOrchestrationService:
         await emit_log(socket_id=socket_id, message=f"[NERV] ⚡ A.T. Field deployed. '{spawned_agent.name}' is now operational.", commandroom=commandroom)
         log_command_room(f"[🧬 COMPLETE] EVA '{spawned_agent.name}' fully deployed, tested, and archived.")
         
-        await emit_event(socket_id=socket_id, message=json.dumps({
-            "status": "✅ EVA created",
-            "agent": stored_agent_response
-        }, default=str))
+        await emit_event(
+            socket_id=socket_id,
+            commandroom=commandroom,
+            event='joshu-a.create',
+            payload={
+                "status": "✅ EVA created",
+                "agent": stored_agent_response,
+                "response": "EVA successfully created and ready."
+            }
+        )
 
     async def chat_w_agent(
         self,
@@ -185,13 +191,13 @@ class DivineOrchestrationService:
             await commandroom.to_socket(
                 socket_id=socket_id,
                 message=f"[💠 Joshu-A][NERV][DOS][🧪 SELF TEST] Sending neural ping to EVA '{agent.system_name}'...",
-                commandroom=commandroom
+      
             )
             test_message = "This is Joshu-A. Can you hear me?"
             await commandroom.to_socket(
                 socket_id=socket_id, 
                 message=f"[💠 Joshu-A][NERV][DOS][🧪 SELF TEST] This is Joshu-A contacting EVA '{agent.system_name}'. Can you hear me?",
-                commandroom=commandroom
+              
             )
             # 🧬 Process the message
             response = await self.agent_service.execute_task(message=test_message, agent=agent)
@@ -211,7 +217,7 @@ class DivineOrchestrationService:
             await commandroom.to_socket(
                 socket_id=socket_id,
                 message=f"[💠 Joshu-A][NERV][DOS] ✅ EVA '{agent.system_name}' responded: {response_text}",
-                commandroom=commandroom
+               
             )
             await agent.remember("first_response", response_text)
 
@@ -219,7 +225,7 @@ class DivineOrchestrationService:
             await commandroom.to_socket(
                 socket_id=socket_id, 
                 message=f"[💠 Joshu-A][NERV][DOS] 💤 EVA '{agent.system_name}' now entering dormant mode.",
-                commandroom=commandroom
+          
             )
             await agent.sleep()
 
@@ -230,6 +236,6 @@ class DivineOrchestrationService:
             await commandroom.to_socket(
                 socket_id=socket_id, 
                 message=f"[💠 Joshu-A][NERV][DOS] ❌ Self test failed for EVA '{agent.system_name}': {str(e)}\n{error_trace}",
-                commandroom=commandroom
+            
             )
             return {"status": "error", "message": str(e)}

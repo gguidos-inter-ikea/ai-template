@@ -58,20 +58,16 @@ async def ws_handler(websocket: WebSocket):
 
     try:
         while True:
-            # 🧠 Receive JSON from client
             message = await websocket.receive_json()
             event = message.get("event")
             data = message.get("data", {})
 
-            # ✅ Signature validation on first divine action
-
-
-            # 🎯 Event routing
             handler = event_router.get(event)
             if handler:
                 try:
                     response = await handler(data)
-                    await websocket.send_json({"event": event, "response": response})
+                    if response is not None:
+                        await websocket.send_json({"event": event, "response": response})
                 except Exception as e:
                     error_response = await handle_ws_exception(commandroom, socket_id, e)
                     await websocket.send_json({"event": event, "error": error_response})
