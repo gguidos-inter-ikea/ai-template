@@ -30,18 +30,14 @@ def register_message_events(
         @event_router.on("joshu-a.create")
         async def handle_create_message(data):
             divine_service = await get_divine_orchestration_service()
-            result = await divine_service.create_agent(
+            await divine_service.create_agent(
                 websocket=websocket,
                 event_router=event_router,
                 socket_id=socket_id,
                 commandroom=commandroom,
                 **data
             )
-            return {
-                "code": 200,
-                "status": "✅ EVA created",
-                "agent_id": result
-            }
+
 
     # 💬 Skip dynamic agent handler if name is missing
     if not agent_system_name:

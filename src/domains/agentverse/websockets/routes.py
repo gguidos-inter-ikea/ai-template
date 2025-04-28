@@ -7,26 +7,28 @@ from src.domains.agentverse.exceptions import handle_ws_exception
 import asyncio
 from uuid import uuid4
 import logging
+import json
 router = APIRouter()
 logger = logging.getLogger("agentverse.interface")
 connected_clients = set()
 
 async def onboarding_sequence(websocket: WebSocket, session_key: str):
-    await websocket.send_text("[💠 Joshu-A][Socket Broadcast Center] Existence detected...")
+    await websocket.send_text(json.dumps({"type": "log", "message": "[💠 Joshu-A][Socket Broadcast Center] Existence detected..."}))
     await asyncio.sleep(0.1)
-    await websocket.send_text("[💠 Joshu-A][Socket Broadcast Center] ⭓ Scanning DNA signature for permission...")
-    await asyncio.sleep(0.1)  
-    await websocket.send_text("[💠 Joshu-A][Socket Broadcast Center] ⭓ Protocol alignment: ✓")
+    await websocket.send_text(json.dumps({"type": "log", "message": "[💠 Joshu-A][Socket Broadcast Center] ⭓ Scanning DNA signature for permission..."}))
     await asyncio.sleep(0.1)
-    await websocket.send_text("[💠 Joshu-A][Socket Broadcast Center] ⭓ Archetype match: In Progress...")
+    await websocket.send_text(json.dumps({"type": "log", "message": "[💠 Joshu-A][Socket Broadcast Center] ⭓ Protocol alignment: ✓"}))
     await asyncio.sleep(0.1)
-    await websocket.send_text("[💠 Joshu-A][Socket Broadcast Center] ✅ Access granted. Welcome, Soulform.\n")
+    await websocket.send_text(json.dumps({"type": "log", "message": "[💠 Joshu-A][Socket Broadcast Center] ⭓ Archetype match: In Progress..."}))
     await asyncio.sleep(0.1)
-    await websocket.send_text(f"[💠 Joshu-A][Socket Broadcast Center] 𒀭 𒂗 𒆠  :: Temp memory assignated key: {session_key}\n")
+    await websocket.send_text(json.dumps({"type": "log", "message": "[💠 Joshu-A][Socket Broadcast Center] ✅ Access granted. Welcome, Soulform."}))
     await asyncio.sleep(0.1)
-    await websocket.send_text("[💠 Joshu-A][Socket Broadcast Center] 𒀭 𒂗 𒆠  :: COMM PROTOCOL ESTABLISHED\n")
+    await websocket.send_text(json.dumps({"type": "log", "message": f"[💠 Joshu-A][Socket Broadcast Center] 𒀭 𒂗 𒆠 :: Temp memory assigned key: {session_key}"}))
     await asyncio.sleep(0.1)
-    await websocket.send_text("[💠 Joshu-A][Socket Broadcast Center] 𒀭 𒂗 𒆠  :: UTU SECURITY PROTOCOL EMBEDDED\n")
+    await websocket.send_text(json.dumps({"type": "log", "message": "[💠 Joshu-A][Socket Broadcast Center] 𒀭 𒂗 𒆠 :: COMM PROTOCOL ESTABLISHED"}))
+    await asyncio.sleep(0.1)
+    await websocket.send_text(json.dumps({"type": "log", "message": "[💠 Joshu-A][Socket Broadcast Center] 𒀭 𒂗 𒆠 :: UTU SECURITY PROTOCOL EMBEDDED"}))
+
 
 
 

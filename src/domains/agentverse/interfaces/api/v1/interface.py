@@ -89,6 +89,18 @@ async def find_agent(
 
     return results
 
+@router.get("/api/v1/agents/cognitive-modules/keys")
+async def list_cognitive_module_keys(request: Request):
+    """List all cognitive module categories and their available keys"""
+    cognitive_modules = request.app.state.cognitive_modules
+
+    result = {
+        category: list(modules.keys())
+        for category, modules in cognitive_modules.items()
+    }
+
+    return result
+
 @router.get("/api/v1/agents/registry/{type}")
 async def get_agent_types(
     type: str,
@@ -98,6 +110,28 @@ async def get_agent_types(
     results = registry_service.list(type, include_metadata=True)
 
     return results
+
+@router.get("/api/v1/agents/registries/{registry_type}/entry/{entry_name}")
+async def get_registry_entry_details(
+    registry_type: str,
+    entry_name: str,
+    registry_service: RegistryService = Depends(get_registry_service),
+):
+    """Retrieve full details of a specific registry entry."""
+    try:
+        # Instead of get_registry(), use get_component() like your service defines
+        component_cls = registry_service.get_component(registry_type, entry_name)
+        component_instance = component_cls()
+        return component_instance.model_dump()
+    
+    except ValueError as ve:
+        return {"error": str(ve)}
+    except KeyError:
+        return {"error": f"Entry '{entry_name}' not found in registry '{registry_type}'."}
+    except Exception as e:
+        return {"error": f"Unexpected error: {str(e)}"}
+
+
 
 @router.post("/api/v1/agents/chat/{id}")
 async def chat_with_agent(

@@ -16,6 +16,9 @@ from src.domains.agentverse.exceptions import (
     InvalidComponentError
 )
 from src.domains.agentverse.command_room.command_room import CommandRoomTransmitter
+from src.domains.agentverse.command_room.utils.emit import (
+    emit_log
+)
 import logging
 
 logger = logging.getLogger(__name__)
@@ -75,9 +78,10 @@ class AgentService:
             socket_id: Optional[str] = None
         ) -> AgentConfig:
       
-        await commandroom.to_socket(
+        await emit_log(
             socket_id=socket_id,
-            message=f"[OP COMMANDER][🔬 EVA ASSEMBLY] Sequencing DNA for prototype type '{agent_request.type}'"
+            message=f"[OP COMMANDER][🔬 EVA ASSEMBLY] Sequencing DNA for prototype type '{agent_request.type}'",
+            commandroom=commandroom
         )
         log_operations_commander(f"[🔬 EVA ASSEMBLY] Sequencing DNA for prototype type '{agent_request.type}'")
         
@@ -102,9 +106,10 @@ class AgentService:
 
         )
      
-        await commandroom.to_socket(
+        await emit_log(
             socket_id=socket_id,
-            message=f"[OP COMMANDER][🔬 EVA ASSEMBLY] Sequencing DNA for prototype type '{agent_request.type}' completed"
+            message=f"[OP COMMANDER][🔬 EVA ASSEMBLY] Sequencing DNA for prototype type '{agent_request.type}' completed",
+            commandroom=commandroom
         )
         log_operations_commander(f"[OP COMMANDER][🔬 EVA ASSEMBLY] Sequencing DNA for prototype type '{agent_request.type}' completed")
         return agent_config

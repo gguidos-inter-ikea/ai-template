@@ -77,7 +77,7 @@ class MongoDBRepository(Generic[T]):
 
         await self.client.insert_one(data_copy, collection)
 
-        return str(data_copy.get("agent_id"))  # ✅ Return the agent's id
+        return data_copy  # ✅ Return the agent's id
 
     async def find_all(self, collection_name: str) -> List[T]:
         """
