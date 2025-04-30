@@ -37,59 +37,65 @@ class DivineOrchestrationService:
         """
         ⚠️ [NERV - OPERATION GENESIS] Entry plug insertion and soul harmonics alignment in progress...
         """
-        await emit_log(socket_id=socket_id, message="[NERV] ⚠️ MAGI AUTH: GENDO IKARI // Operation: EVA Genesis Initiated", commandroom=commandroom)
+        await emit_log(socket_id=socket_id, message="[💠 Joshu-A][NERV][DOS] ⚠️ MAGI AUTH: GENDO IKARI // Operation: EVA Genesis Initiated", commandroom=commandroom)
 
         # 🧬 Phase 01: Core Blueprint Extraction
         try:
             payload = data.get("message", {})
             agent_request = AgentRequest(**payload)
-            await emit_log(socket_id=socket_id, message=f"[NERV] [🧬 STAGE 1] Deploying DNA string blueprint for EVA prototype: '{agent_request.name}'", commandroom=commandroom)
+            await emit_log(socket_id=socket_id, message=f"[💠 Joshu-A][NERV][DOS] [🧬 STAGE 1] Deploying DNA string blueprint for EVA prototype: '{agent_request.name}'", commandroom=commandroom)
         except Exception as e:
-            await emit_log(socket_id=socket_id, message=f"[NERV] ❌ Blueprint invalid. Entry plug rejection.\n» {e}", commandroom=commandroom)
+            await emit_log(socket_id=socket_id, message=f"[💠 Joshu-A][NERV][DOS] ❌ Blueprint invalid. Entry plug rejection.\n» {e}", commandroom=commandroom)
             return {"error": str(e)}
 
         # ⚙️ Phase 02: Genetic Alignment Sequence
         log_command_room(f"[🧬 STAGE 1.1] DNA sequence generation for prototype type: '{agent_request.type}' initialized")
-        await emit_log(socket_id=socket_id, message=f"[NERV] [🧬 STAGE 1.1] DNA sequence generation for prototype: '{agent_request.name}' initialized", commandroom=commandroom)
+        await emit_log(socket_id=socket_id, message=f"[[💠 Joshu-A][NERV][DOS][🧬 STAGE 1.1] DNA sequence generation for prototype: '{agent_request.name}' initialized", commandroom=commandroom)
 
         agent_config = await self.agent_service.agent_config(agent_request, commandroom=commandroom, socket_id=socket_id)
 
-        await emit_log(socket_id=socket_id, message=f"[NERV] [🧬 STAGE 1.1] ✅ DNA sequence generation for '{agent_request.name}' completed", commandroom=commandroom)
+        await emit_log(socket_id=socket_id, message=f"[💠 Joshu-A][NERV][DOS][🧬 STAGE 1.1] ✅ DNA sequence generation for '{agent_request.name}' completed", commandroom=commandroom)
         log_command_room("[🧬 STAGE 1.1] DNA sequence generation completed")
 
-        log_command_room(message=f"[NERV] [🧬 STAGE 1.2] Integrity Scan for EVA: '{agent_request.name}'")
+        log_command_room(message=f"[💠 Joshu-A][NERV][DOS][🧬 STAGE 1.2] Integrity Scan for EVA: '{agent_request.name}'")
         fake_request = SimpleNamespace()
         fake_request.app = websocket.app
 
         # Type validation
         if not self.agent_service.check_if_agent_type_exists(agent_config.type):
-            error_msg = f"[🛑 ABORT] Unknown EVA prototype type: '{agent_config.type}' — DNA sequence deployment failed."
+            error_msg = f"[💠 Joshu-A][NERV][DOS][🛑 ABORT] Unknown EVA prototype type: '{agent_config.type}' — DNA sequence deployment failed."
             log_command_room(error_msg)
             raise BlueprintConflictError(field="type", value=agent_config.type)
 
-        await emit_log(socket_id=socket_id, message=f"[NERV] ✅ EVA type '{agent_request.type}' is valid.", commandroom=commandroom)
-        await emit_log(socket_id=socket_id, message="[NERV] [🧬 STAGE 1.2.2] Validating component configuration...", commandroom=commandroom)
+        await emit_log(socket_id=socket_id, message=f"[💠 Joshu-A][NERV][DOS] ✅ EVA type '{agent_request.type}' is valid.", commandroom=commandroom)
+        await emit_log(socket_id=socket_id, message="[💠 Joshu-A][NERV][DOS][🧬 STAGE 1.2.2] Validating component configuration...", commandroom=commandroom)
 
         self.agent_service.validate_component_types(fake_request, agent_config)
-        await emit_log(socket_id=socket_id, message="[NERV] ✅ Component configuration valid.", commandroom=commandroom)
+        await emit_log(socket_id=socket_id, message="[💠 Joshu-A][NERV][DOS] ✅ Component configuration valid.", commandroom=commandroom)
 
         # Duplicate check
-        await emit_log(socket_id=socket_id, message=f"[NERV] Checking IAE for existing EVA with name: '{agent_request.name}'...", commandroom=commandroom)
+        await emit_log(socket_id=socket_id, message=f"[💠 Joshu-A][NERV][DOS] Checking IAE for existing EVA with name: '{agent_request.name}'...", commandroom=commandroom)
         await self.db_service.check_for_duplicates(fake_request, agent_config)
-        await emit_log(socket_id=socket_id, message=f"[NERV] ✅ EVA '{agent_request.name}' DNA string cleared by Agentverse Existence Index.", commandroom=commandroom)
+        await emit_log(socket_id=socket_id, message=f"[💠 Joshu-A][NERV][DOS] ✅ EVA '{agent_request.name}' DNA string cleared by Agentverse Existence Index.", commandroom=commandroom)
 
         # 🛠️ Phase 03: Assembly
-        await emit_log(socket_id=socket_id, message=f"[NERV] [🧬 STAGE 1.3] Assembling EVA '{agent_request.name}'...", commandroom=commandroom)
+        await emit_log(socket_id=socket_id, message=f"[💠 Joshu-A][NERV][DOS][🧬 STAGE 1.3] Assembling EVA '{agent_request.name}'...", commandroom=commandroom)
         agent = self.agent_service.create_agent(agent_config)
         
-        await emit_log(socket_id=socket_id, message=f"[NERV] ✅ EVA '{agent.name}' assembled.", commandroom=commandroom)
+        await emit_log(socket_id=socket_id, message=f"[💠 Joshu-A][NERV][DOS]✅ EVA '{agent.name}' assembled.", commandroom=commandroom)
         db_agent = DBAgent(user_id=agent_request.user_id, agent=agent)
         
         stored_agent_response = await self.db_service.store_agent(fake_request, db_agent)
         stored_agent_id = stored_agent_response.get("agent_id")
-        stored_agent = stored_agent_response.get("agent_name")
-        stored_agent = stored_agent = json.dumps(stored_agent_response, default=str)
-        await emit_log(socket_id=socket_id, message=f"[NERV] ✅ EVA '{stored_agent}' DNA string stored in the Agentverse Existence Index.", commandroom=commandroom)
+        stored_agent_name = stored_agent_response.get("agent_name")
+        stored_agent_system_name = stored_agent_response.get("agent_system_name")
+        
+        agent_response = {
+            "agent_id":stored_agent_id,
+            "agent_system_name": stored_agent_system_name
+        }
+        
+        await emit_log(socket_id=socket_id, message=f"[💠 Joshu-A][NERV][DOS] ✅ EVA '{stored_agent_name}' DNA string stored in the Agentverse Existence Index.", commandroom=commandroom)
         if not stored_agent_id:
             raise ValueError("Could not retrieve '_id' from inserted_agent")
 
@@ -101,12 +107,10 @@ class DivineOrchestrationService:
             cache=websocket.app.state.cognitive_modules["cache"]["redis"],
             agent_registry=getattr(self, "active_agents", None)
 )
-        test = await self.self_test_and_sleep(spawned_agent, commandroom, socket_id)
+        await self.self_test_and_sleep(spawned_agent, commandroom, socket_id)
 
-
-        await emit_log(socket_id=socket_id, message=test, commandroom=commandroom)
-        await emit_log(socket_id=socket_id, message=f"[NERV] ⚡ A.T. Field deployed. '{spawned_agent.name}' is now operational.", commandroom=commandroom)
-        log_command_room(f"[🧬 COMPLETE] EVA '{spawned_agent.name}' fully deployed, tested, and archived.")
+        await emit_log(socket_id=socket_id, message=f"[NERV] ⚡ A.T. Field deployed. '{stored_agent_name}' is now operational.", commandroom=commandroom)
+        log_command_room(f"[🧬 COMPLETE] EVA '{stored_agent_name}' fully deployed, tested, and archived.")
         
         await emit_event(
             socket_id=socket_id,
@@ -114,7 +118,7 @@ class DivineOrchestrationService:
             event='joshu-a.create',
             payload={
                 "status": "✅ EVA created",
-                "agent": stored_agent_response,
+                "agent": json.dumps(agent_response),
                 "response": "EVA successfully created and ready."
             }
         )
@@ -158,12 +162,12 @@ class DivineOrchestrationService:
             )
 
             # 🧬 Process the message
-            response = await self.agent_service.execute_task(message=payload, agent=agent)
+            response = await agent.respond(payload)
             
             await emit_event(
                 socket_id=socket_id,
                 event='chat',
-                message={
+                payload={
                     "department": "[💠 Joshu-A][NERV][DOS] [🧬 STAGE 2] EVA response received.",
                     "status": "✅ EVA replied",
                     "response": response
@@ -171,8 +175,10 @@ class DivineOrchestrationService:
                 commandroom=commandroom
             )
 
+            return {"status": "✅ Message sent", "message": response}
+    
         except Exception as e:
-            await commandroom.to_socket(
+            await emit_event(
                 socket_id=socket_id,
                 message=f"[💠 Joshu-A][NERV] ❌ Blueprint invalid. Entry plug rejection.\n» {e}",
                 commandroom=commandroom

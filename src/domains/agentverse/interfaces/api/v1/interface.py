@@ -85,7 +85,7 @@ async def find_agent(
     db_service: DBService = Depends(get_db_service)
 ):
     
-    results = await db_service.find_all(request)
+    results = await db_service.find_chat_agent(request, agent_id)
 
     return results
 
@@ -130,8 +130,6 @@ async def get_registry_entry_details(
         return {"error": f"Entry '{entry_name}' not found in registry '{registry_type}'."}
     except Exception as e:
         return {"error": f"Unexpected error: {str(e)}"}
-
-
 
 @router.post("/api/v1/agents/chat/{id}")
 async def chat_with_agent(

@@ -86,41 +86,33 @@ async def ws_chat_handler(websocket: WebSocket, agent_system_name: str):
     event_router = websocket.app.state.event_router
     socket_id = str(uuid4())
     session_key = websocket.scope.get("session_key", "unknown")
-
-    # ✅ Receive first message to extract agent info
-    first_message = await websocket.receive_json()
-    event = first_message.get("event", "").lower()
-    event = f"{agent_system_name}.{event}"
-    data = first_message.get("data", {})
-
-    # ✅ Extract agent_name from message or event
-    agent_system_name = first_message.get("agent_name") or event.split(".")[0]
-    agent_system_name = agent_system_name.lower()
-    agent_id = first_message.get("agent_id", None)
-
-
-    # 🧠 Optional: log who connected
-    await websocket.send_text(f"[🌐 Connected as agent: {agent_system_name}]")
-
+    
     # 🔄 Access cognitive modules
     commbridge = websocket.app.state.cognitive_modules["communication"]["socketRedisBridge"]
     commandroom = CommandRoomTransmitter(commbridge)
 
-    # 🛠️ Register the socket in the bridge
-    await commbridge.connect(socket_id, websocket)
+    # ✅ Receive first message to extract agent info
+    first_message = await websocket.receive_json()
+    event = first_message.get("event", "").lower()
+    data = first_message.get("data", {})
 
-    # 🧠 Register this agent’s event handlers
+    agent_system_name = first_message.get("agent_system_name") or event.split(".")[0]
+    agent_system_name = agent_system_name.lower()
+    agent_id = first_message.get("agent_id", None)
+
+    # 🌟 FIRST: Register handlers based on agent name
     register_message_events(
-        websocket=websocket,
         event_router=event_router,
+        websocket=websocket,
         socket_id=socket_id,
-        agent_id=agent_id,
         agent_system_name=agent_system_name,
+        agent_id=agent_id,
         commandroom=commandroom
     )
 
-    # ✅ Handle first message manually
     handler = event_router.get(event)
+
+    # ✅ Dispatch first event properly
     if handler:
         response = await handler(data)
         await websocket.send_json({"event": event, "response": response})

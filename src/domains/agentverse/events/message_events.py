@@ -37,7 +37,6 @@ def register_message_events(
                 commandroom=commandroom,
                 **data
             )
-        return {"status": "✅ EVA event emitted"} 
 
     # 💬 Skip dynamic agent handler if name is missing
     if not agent_system_name:
@@ -83,4 +82,3 @@ def register_message_events(
         pass
 
     logger.info(f"[🧠 All registered handlers] {list(event_router.handlers.keys())}")
-

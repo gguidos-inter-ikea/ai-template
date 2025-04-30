@@ -138,9 +138,3 @@ class DBService:
         await db_repository.update_one({"agent_id": agent_id}, update_payload, collection_name)
 
         return await self.find_one(request, {"agent_id": agent_id})
-
-
-
-
-
-
