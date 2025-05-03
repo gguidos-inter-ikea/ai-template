@@ -1,36 +1,53 @@
-from pydantic import BaseModel, Field
-from typing import Optional, Any
-from src.domains.agentverse.entities.agent_soul_protocol import AgentSoulProtocol
-from src.domains.agentverse.entities.tools.tool_spec import ToolSpec
-from typing import List
+from __future__ import annotations
+from typing import Any, Dict, List, Optional
+from pydantic import BaseModel, Field, PrivateAttr, computed_field
+
+from src.domains.agentverse.entities.agent_soul_protocol_parts.agent_soul_protocol import AgentSoulProtocol
+from src.domains.agentverse.registries import personality_registry_instance
 
 class AgentRequest(BaseModel):
+    # --- core fields -------------------------------------------------
     user_id: str
     name: str
     type: str
     prompt: str
-    llm_type: Optional[str] = "openai"
-    db_type: Optional[str] = None
-    cache_type: Optional[str] = "redis"
+
+    # --- back-ends ---------------------------------------------------
+    llm_type:        Optional[str] = "openai"
+    db_type:         Optional[str] = None
+    cache_type:      Optional[str] = "redis"
     knowledge_db_type: Optional[str] = None
-    messaging_type: Optional[str] = None
-    
-    access_mode: str = Field(
-        "public",
-        description="Options: public, commander, ritual, guardian, offline"
-    )
-    
-    public_key: Optional[str] = None  # distributed for verification
-    private_key: Optional[str] = None # kept encrypted, used to sign memory, DNA merges
+    messaging_type:  Optional[str] = None
+
+    # --- security ----------------------------------------------------
+    access_mode: str = Field(default="public")
+    public_key:  Optional[str] = None
+    private_key: Optional[str] = None
     whitelist_users: List[str] = Field(default_factory=list)
     blacklist_users: List[str] = Field(default_factory=list)
 
-    personality_profile: str = Field(
-        "Mortal EVA",
-        description="Name of the personality profile to bind"
-    )
-    personality: Optional[AgentSoulProtocol] = None
-    tools: List[ToolSpec] = Field(default_factory=list)
+    # 2) raw delta from the UI  (whatever keys the user changed)
+    personality: Dict[str, Any]      # <-- stays dict, no defaults added
+
+    # --- tools -------------------------------------------------------
+    tools: List[str] = Field(default_factory=list)
+
+    # --- private cached full soul -----------------------------------
+    _soul: AgentSoulProtocol | None = PrivateAttr(default=None)
+
+    model_config = {"extra": "allow", "populate_by_name": True}
+
+    # ---------- helper to get the full, hydrated soul ----------------
+    @computed_field
+    @property
+    def soul(self) -> AgentSoulProtocol:
+        """Return a cached full AgentSoulProtocol (lazy‐hydrated)."""
+        if self._soul is None:
+            base = personality_registry_instance.get(self.personality_archetype)()
+            self._soul = base.model_copy(update=self.personality, deep=True)
+        return self._soul
+
+
 
 class AgentConfig(BaseModel):
     user_id: str
@@ -47,17 +64,15 @@ class AgentConfig(BaseModel):
     blacklist_users: Optional[List[str]] = None  # Users explicitly denied
     knowledge_db_type: Optional[str]
     messaging_type: Optional[str]
-    personality_profile: Optional[str]
-    personality: Optional[AgentSoulProtocol]
+    personality: AgentSoulProtocol
     access_mode: str
     tools: Optional[List[str]] = None  # List of tool names
     public_key: Optional[str] = None  # distributed for verification
     private_key: Optional[str] = None # kept encrypted, used to sign memory, DNA merges
     whitelist_users: Optional[List[str]]  # Usernames or session keys allowed
     blacklist_users: Optional[List[str]]  # Users explicitly denied
-    personality_profile: Optional[str] = Field('Mortal EVA', alias="personality_profile")
-    personality: Optional[AgentSoulProtocol] = None
-    tools: List[ToolSpec]  # List of tool names
+    personality: Dict[str, Any] 
+    tools: List[str] = Field(default_factory=list)
 
 class BaseAgentConfig(BaseModel):
     id: str
@@ -71,15 +86,14 @@ class BaseAgentConfig(BaseModel):
     cache: Optional[Any]
     vectordb: Optional[Any]
     messaging: Optional[Any]
-    personality_profile: Optional[str]
     access_mode: str
     public_key: Optional[str] = None  # distributed for verification
     private_key: Optional[str] = None # kept encrypted, used to sign memory, DNA merges
     whitelist_users: Optional[List[str]]  # Usernames or session keys allowed
     blacklist_users: Optional[List[str]]  # Users explicitly denied
-    tools: List[ToolSpec]
+    tools: List[str] = Field(default_factory=list)
     dna_sequence: str
-    personality: AgentSoulProtocol
+    personality: Dict[str, Any]
     chat_url: str
 
 class Agent(BaseModel):
@@ -94,15 +108,14 @@ class Agent(BaseModel):
     cache_type: Optional[str]
     knowledge_db_type: Optional[str]
     messaging_type: Optional[str]
-    personality_profile: Optional[str]
-    personality: AgentSoulProtocol
+    personality: Dict[str, Any]
     access_mode: str # Options: "public", "commander", "ritual", "guardian", "offline"
     public_key: Optional[str] = None  # distributed for verification
     private_key: Optional[str] = None # kept encrypted, used to sign memory, DNA merges
     whitelist_users: Optional[List[str]] # Usernames or session keys allowed
     blacklist_users: Optional[List[str]] # Users explicitly denied
     dna_sequence: str
-    tools: List[ToolSpec] #List of tool names
+    tools: List[str] = Field(default_factory=list)
 
 class DBAgent(BaseModel):
     user_id: str

@@ -49,7 +49,7 @@ class DBService:
             )
 
             # 🌱 No assumptions — just dump the meaningful traits
-            personality_dump = db_agent.agent.personality.model_dump(exclude_none=True)
+
             
             data = {
                 "creator": db_agent.user_id,
@@ -70,8 +70,7 @@ class DBService:
                 "agent_whitelist_users": db_agent.agent.whitelist_users,
                 "agent_blacklist_users": db_agent.agent.blacklist_users,
                 "agent_tools": [ ts.model_dump() for ts in db_agent.agent.tools ],
-                "agent_personality": personality_dump,
-                "agent_personality_profile": db_agent.agent.personality_profile,
+                "agent_personality": db_agent.agent.personality,
                 "agent_dna_sequence": db_agent.agent.dna_sequence,
             }
 

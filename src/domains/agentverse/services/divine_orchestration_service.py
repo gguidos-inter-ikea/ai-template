@@ -1,21 +1,24 @@
 from fastapi import WebSocket
 import traceback
-import json
 from types import SimpleNamespace
 from src.domains.agentverse.services.db_service import DBService
 from src.domains.agentverse.services.agent_service import AgentService
-from src.domains.agentverse.entities.agent import AgentRequest, DBAgent
+from src.domains.agentverse.entities.agent import AgentRequest
 from src.domains.agentverse.command_room.command_room import CommandRoomTransmitter
 from src.domains.agentverse.logging.logger import log_command_room
 from src.domains.agentverse.agents.utils.get_or_spawn_agent import get_or_spawn_agent
+from src.domains.agentverse.entities.agent import (
+    DBAgent
+)
 from src.domains.agentverse.command_room.utils.emit import (
     emit_log,
     emit_event
 )
+
 from src.domains.agentverse.exceptions import (
     BlueprintConflictError
 )
-
+import json
 class DivineOrchestrationService:
     """
     This class is responsible for orchestrating the divine processes of
@@ -53,7 +56,7 @@ class DivineOrchestrationService:
         await emit_log(socket_id=socket_id, message=f"[[💠 Joshu-A][NERV][DOS][🧬 STAGE 1.1] DNA sequence generation for prototype: '{agent_request.name}' initialized", commandroom=commandroom)
 
         agent_config = await self.agent_service.agent_config(agent_request, commandroom=commandroom, socket_id=socket_id)
-
+        log_command_room(f"{agent_config}")
         await emit_log(socket_id=socket_id, message=f"[💠 Joshu-A][NERV][DOS][🧬 STAGE 1.1] ✅ DNA sequence generation for '{agent_request.name}' completed", commandroom=commandroom)
         log_command_room("[🧬 STAGE 1.1] DNA sequence generation completed")
 
@@ -83,6 +86,8 @@ class DivineOrchestrationService:
         agent = self.agent_service.create_agent(agent_config)
         
         await emit_log(socket_id=socket_id, message=f"[💠 Joshu-A][NERV][DOS]✅ EVA '{agent.name}' assembled.", commandroom=commandroom)
+
+        await emit_log(socket_id=socket_id, message=f"[💠 Joshu-A][NERV][DOS] ✅ Storing EVA '{agent.name}' DNA in the Agentverse Existence Index.", commandroom=commandroom)
         db_agent = DBAgent(user_id=agent_request.user_id, agent=agent)
         
         stored_agent_response = await self.db_service.store_agent(fake_request, db_agent)
@@ -106,7 +111,7 @@ class DivineOrchestrationService:
             agent_service=self.agent_service,
             cache=websocket.app.state.cognitive_modules["cache"]["redis"],
             agent_registry=getattr(self, "active_agents", None)
-)
+        )
         await self.self_test_and_sleep(spawned_agent, commandroom, socket_id)
 
         await emit_log(socket_id=socket_id, message=f"[NERV] ⚡ A.T. Field deployed. '{stored_agent_name}' is now operational.", commandroom=commandroom)
@@ -180,7 +185,8 @@ class DivineOrchestrationService:
         except Exception as e:
             await emit_event(
                 socket_id=socket_id,
-                message=f"[💠 Joshu-A][NERV] ❌ Blueprint invalid. Entry plug rejection.\n» {e}",
+                event='chat',
+                payload=f"[💠 Joshu-A][NERV] ❌ Blueprint invalid. Entry plug rejection.\n» {e}",
                 commandroom=commandroom
             )
             return {"error": str(e)}

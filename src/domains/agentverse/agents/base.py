@@ -27,7 +27,6 @@ class BaseAgent(ABC):
         commbridge: Any = None,
         messaging: Any = None,
         chat_url: str = None,
-        personality_profile: str = None,
         personality: Any = None,
         dna_sequence: str = None,
         access_mode: str = "public",
@@ -54,7 +53,6 @@ class BaseAgent(ABC):
         self.commbridge = commbridge
         self.messaging = messaging
         self.chat_url = chat_url  # ← fixed here
-        self.personality_profile = personality_profile
         self.personality = personality
         self.access_mode = access_mode
         self.public_key = public_key
@@ -164,7 +162,6 @@ class BaseAgent(ABC):
             "commbridge_type": getattr(self.commbridge, "type", None),
             "messaging_type": getattr(self.messaging, "channel", None),
             "chat_url": self.chat_url,
-            "personality_profile": self.personality_profile,
             "personality": getattr(self.personality, "name", str(self.personality)) if self.personality else None,
             "dna_sequence": self.dna_sequence,
             "personality_context": self.personality_context,

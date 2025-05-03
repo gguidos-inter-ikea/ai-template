@@ -99,7 +99,6 @@ class AgentService:
             db_type=agent_request.db_type,
             cache_type=agent_request.cache_type,
             knowledge_db_type=agent_request.knowledge_db_type,
-            personality_profile=agent_request.personality_profile,
             access_mode=agent_request.access_mode,
             public_key=agent_request.public_key,
             private_key=agent_request.private_key,
@@ -110,7 +109,7 @@ class AgentService:
             messaging_type=agent_request.messaging_type
 
         )
-     
+        log_operations_commander(agent_config)
         await emit_log(
             socket_id=socket_id,
             message=f"[OP COMMANDER][🔬 EVA ASSEMBLY] Sequencing DNA for prototype type '{agent_request.type}' completed",
@@ -122,11 +121,6 @@ class AgentService:
     def create_agent(self, agent_config: AgentConfig):
         logger.debug(f"Task received for blueprinting: {agent_config.name}")
         log_operations_commander(f"[🔬 EVA ASSEMBLY] Blueprinting { agent_config.name }")
-        personality = self.personality_service.resolve(
-            profile_name=agent_config.personality_profile,
-            custom_personality=agent_config.personality
-        )
-        agent_config.personality = personality
         agent = self.agent_factory.create_agent(agent_config)
         logger.debug(f"[Completed] Blueprinting { agent_config.name } finished")
         log_operations_commander(f"[🔬 EVA ASSEMBLY] Blueprinting { agent_config.name } completed")

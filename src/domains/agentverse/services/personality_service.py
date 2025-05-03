@@ -42,8 +42,6 @@ class PersonalityService:
         if config.personality:
             log_evangelion_bay("[🧠 PERSONALITY LOAD] Custom EVA personality traits detected — overriding archetype.")
             return config.personality
-        if config.personality:
-            return config.personality
         if config.personality_profile:
             try:
                 return self.personality_factory.create_from_archetype(config.personality_profile)

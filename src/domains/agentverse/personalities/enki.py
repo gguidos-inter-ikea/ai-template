@@ -3,10 +3,10 @@ from src.domains.agentverse.entities.agent_soul_protocol_parts.basic_profile imp
 from src.domains.agentverse.entities.agent_soul_protocol_parts.expression_profile import ExpressionProfile
 from src.domains.agentverse.registries import personality_registry_instance
 
-@personality_registry_instance.register(name="Empty EVA", description="Base for creation of new personalities")
+@personality_registry_instance.register(name="Enki", description="Base for creation of new personalities")
 class QuickAssistant(AgentSoulProtocol):
     basic_profile: BasicProfile = BasicProfile(
-        name="Empty EVA",
+        name="Enki",
         description="Answers concisely and without fluff."
     )
     expression_profile: ExpressionProfile = ExpressionProfile(

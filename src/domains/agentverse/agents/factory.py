@@ -60,10 +60,6 @@ class AgentFactory:
             dna_sequence = self.generate_dna_sequence(agent_config)
             log_evangelion_bay(f"[🧬 DNA SEQUENCE] Genetic code synthesized: {dna_sequence}")
 
-            log_evangelion_bay("[🧬 PERSONALITY SYNTHESIS] EVA personality traits detected — initiating trait fusion sequence...")
-            personality = self.resolve_personality(agent_config)
-            log_evangelion_bay(f"[🧬 PERSONALITY BINDING] EVA personality traits bound to '{personality.name}'")
-
             log_evangelion_bay(f"[🧬 EVA PROTOTYPE] EVA prototype tools {agent_config.tools} assembly in progress...")
 
             missing = []
@@ -89,8 +85,7 @@ class AgentFactory:
                 cache_type=agent_config.cache_type,
                 knowledge_db_type=agent_config.knowledge_db_type,
                 messaging_type=agent_config.messaging_type,
-                personality=personality,
-                personality_profile=agent_config.personality_profile,
+                personality=agent_config.personality,
                 access_mode=agent_config.access_mode,
                 public_key=agent_config.public_key,
                 private_key=agent_config.private_key,
@@ -134,7 +129,6 @@ class AgentFactory:
             blacklist_users=db_agent.agent_blacklist_users,
             tools=db_agent.agent_tools,
             chat_url=db_agent.agent_chat_url,
-            personality_profile=db_agent.agent_personality_profile,
             dna_sequence=db_agent.agent_dna_sequence
         )
 
@@ -147,7 +141,6 @@ class AgentFactory:
             → Internal frame: synchronized
             → Neural scaffold: bonded
             → LCL Levels Stabilized
-            → EVA personality profile: {db_agent.agent_personality_profile}
             → Soul protocol hash: {db_agent.agent_dna_sequence[:8]}...
             ✓ EVA '{db_agent.agent_name}' now bound to Soul Grid.
         """)
