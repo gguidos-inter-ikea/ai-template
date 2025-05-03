@@ -15,9 +15,6 @@ from src.domains.agentverse.utils.generate_dna_sequence import (
 from src.domains.agentverse.agents.personalities.utils.synchronize_agent import (
     synchronize_agent
 )
-from src.domains.agentverse.agents.personalities.utils.resolve_personality import (
-    resolve_personality
-)
 from src.domains.agentverse.agents.factory import (
     AgentFactory
 )
@@ -48,7 +45,6 @@ class AgentverseContainer(containers.DeclarativeContainer):
 
     agent_factory = providers.Factory(
         AgentFactory,
-        resolve_personality = resolve_personality,
         synchronize_agent = synchronize_agent,
         generate_dna_sequence = generate_dna_sequence,
         get_agent_class = get_agent_class

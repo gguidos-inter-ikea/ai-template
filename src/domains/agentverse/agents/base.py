@@ -27,7 +27,7 @@ class BaseAgent(ABC):
         commbridge: Any = None,
         messaging: Any = None,
         chat_url: str = None,
-        personality: Any = None,
+        personality: Dict[str, Any] = {},
         dna_sequence: str = None,
         access_mode: str = "public",
         public_key: Optional[str] = None,

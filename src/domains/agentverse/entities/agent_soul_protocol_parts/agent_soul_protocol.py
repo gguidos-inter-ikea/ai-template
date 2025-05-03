@@ -9,6 +9,7 @@ from src.domains.agentverse.entities.agent_soul_protocol_parts.personal_profile 
 from src.domains.agentverse.entities.agent_soul_protocol_parts.sensory_profile import SensoryProfile
 from src.domains.agentverse.entities.agent_soul_protocol_parts.simulation_profile import SimulationProfile
 from src.domains.agentverse.entities.agent_soul_protocol_parts.spiritual_profile import SpiritualProfile
+from src.domains.agentverse.entities.agent_soul_protocol_parts.agent_soul_protocol_metadata import AgentSoulProfileMetadata
 from src.domains.agentverse.entities.agent_soul_protocol_parts.basic_profile import BasicProfile
 from typing import Dict, Any
 
@@ -40,9 +41,9 @@ class AgentSoulProtocol(BaseModel):
         base = baseline.model_dump(exclude_none=True)
         return _deep_trim(raw, base)
 
-    # agent_soul_profile_metadata: AgentSoulProfileMetadata = Field(  # ⚠️ use default_factory
-    #     default_factory=AgentSoulProfileMetadata
-    # )
+    agent_soul_profile_metadata: AgentSoulProfileMetadata = Field(  # ⚠️ use default_factory
+        default_factory=AgentSoulProfileMetadata
+    )
     basic_profile: BasicProfile = Field(default_factory=BasicProfile)
     cognitive_profile:  CognitiveProfile  = Field(default_factory=CognitiveProfile)
     culinary_profile:   CulinaryProfile   = Field(default_factory=CulinaryProfile)

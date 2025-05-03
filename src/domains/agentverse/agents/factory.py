@@ -37,12 +37,10 @@ class AgentFactory:
     def __init__(
             self,
             synchronize_agent: Callable,
-            resolve_personality: Callable,
             generate_dna_sequence: Callable,
             get_agent_class: Callable
         ):
         self.synchronize_agent = synchronize_agent
-        self.resolve_personality = resolve_personality
         self.generate_dna_sequence = generate_dna_sequence
         self.get_agent_class = get_agent_class
 
