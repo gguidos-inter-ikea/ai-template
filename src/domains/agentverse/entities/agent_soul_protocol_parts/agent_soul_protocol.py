@@ -7,7 +7,6 @@ from src.domains.agentverse.entities.agent_soul_protocol_parts.economic_profile 
 from src.domains.agentverse.entities.agent_soul_protocol_parts.expression_profile import ExpressionProfile
 from src.domains.agentverse.entities.agent_soul_protocol_parts.personal_profile import PersonalProfile
 from src.domains.agentverse.entities.agent_soul_protocol_parts.sensory_profile import SensoryProfile
-from src.domains.agentverse.entities.agent_soul_protocol_parts.simulation_profile import SimulationProfile
 from src.domains.agentverse.entities.agent_soul_protocol_parts.spiritual_profile import SpiritualProfile
 from src.domains.agentverse.entities.agent_soul_protocol_parts.agent_soul_protocol_metadata import AgentSoulProfileMetadata
 from src.domains.agentverse.entities.agent_soul_protocol_parts.basic_profile import BasicProfile
@@ -53,7 +52,6 @@ class AgentSoulProtocol(BaseModel):
     identity_profile:   IdentityProfile   = Field(default_factory=IdentityProfile)
     personal_profile:   PersonalProfile   = Field(default_factory=PersonalProfile)
     sensory_profile:    SensoryProfile    = Field(default_factory=SensoryProfile)
-    simulation_profile: SimulationProfile = Field(default_factory=SimulationProfile)
     spiritual_profile:  SpiritualProfile  = Field(default_factory=SpiritualProfile)
 
     # Accept unknown top-level keys if you ever extend the schema at runtime

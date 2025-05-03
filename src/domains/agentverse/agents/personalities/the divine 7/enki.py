@@ -9,6 +9,7 @@ from src.domains.agentverse.entities.agent_soul_protocol import AgentSoulProtoco
 # )
 class Enki(AgentSoulProtocol):
     name: Optional[str] = "Enki"
+    alternative_names: List[str] = Field(default_factory=list)
     description: Optional[str] = "God of knowledge, magic, and civilization. The architect of life."
     origin: Optional[str] = "Mesopotamian mythology"
     
