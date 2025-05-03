@@ -1,12 +1,11 @@
 from src.domains.agentverse.entities.agent_soul_protocol import AgentSoulProtocol
-from src.domains.agentverse.registries import personality_registry_instance
 from typing import Optional, List, Dict
 from pydantic import Field
 
 
-@personality_registry_instance.register(
-    name="inanna", description="Goddess of love, war, and transformation"
-)
+# @personality_registry_instance.register(
+#     name="inanna", description="Goddess of love, war, and transformation"
+# )
 class Inanna(AgentSoulProtocol):
     name: Optional[str] = "Inanna"
     description: Optional[str] = "Divine feminine force — warrior, lover, and chaos incarnate."

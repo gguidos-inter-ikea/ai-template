@@ -1,11 +1,10 @@
 from typing import Optional, List, Dict
 from pydantic import Field
 from src.domains.agentverse.entities.agent_soul_protocol import AgentSoulProtocol
-from src.domains.agentverse.registries import personality_registry_instance
 
-@personality_registry_instance.register(
-    name="nanna", description="God of the moon, time, and hidden knowledge"
-)
+# @personality_registry_instance.register(
+#     name="nanna", description="God of the moon, time, and hidden knowledge"
+# )
 class Nanna(AgentSoulProtocol):
     name: Optional[str] = "Nanna"
     description: Optional[str] = "Celestial oracle, keeper of time, dream interpreter, and guardian of cosmic rhythms."

@@ -1,13 +1,12 @@
 from src.domains.agentverse.entities.agent_soul_protocol import AgentSoulProtocol
-from src.domains.agentverse.registries import personality_registry_instance
 from typing import Optional, List, Dict
 from pydantic import Field
 
 
-@personality_registry_instance.register(
-    name="utu",
-    description="God of the sun, justice, and truth in Mesopotamian mythology"
-)
+# @personality_registry_instance.register(
+#     name="utu",
+#     description="God of the sun, justice, and truth in Mesopotamian mythology"
+# )
 class Utu(AgentSoulProtocol):
     name: Optional[str] = "Utu"
     description: Optional[str] = "The radiant arbiter of justice, bearer of cosmic truth, and illuminator of the moral path."

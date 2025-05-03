@@ -1,10 +1,9 @@
 from typing import Optional, List, Dict
 from pydantic import Field
 from src.domains.agentverse.entities.agent_soul_protocol import AgentSoulProtocol
-from src.domains.agentverse.registries import personality_registry_instance
 
 
-@personality_registry_instance.register(name="Mortal EVA", description="Generic EVA Prototype")
+# @personality_registry_instance.register(name="Mortal EVA", description="Generic EVA Prototype")
 class MortalEVA(AgentSoulProtocol):
     name: str = "mortal_eva"
     description: Optional[str] = "A foundational EVA prototype with balanced and neutral traits."

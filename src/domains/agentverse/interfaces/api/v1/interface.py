@@ -12,6 +12,9 @@ from src.domains.agentverse.services.registry_service import RegistryService
 from src.domains.agentverse.services.db_service import DBService
 from src.domains.agentverse.logging.logger import log_command_room
 from src.domains.agentverse.entities.db import DBAgentPost
+from src.domains.agentverse.services.personality_service import PersonalityService
+from src.domains.agentverse.dependencies.get_personality_service import get_personality_service
+from src.domains.agentverse.entities.agent_soul_protocol_parts.agent_soul_protocol import AgentSoulProtocol
 from src.domains.agentverse.exceptions import (
     BlueprintConflictError
 )
@@ -19,7 +22,13 @@ import logging
 
 logger = logging.getLogger("agentverse.interface")
 router = APIRouter()
-    
+
+def diff_dump(soul: AgentSoulProtocol) -> dict:
+    baseline = AgentSoulProtocol()                       # canonical defaults
+    raw      = soul.model_dump(exclude_none=True)        # full object, minus None
+    base     = baseline.model_dump(exclude_none=True)
+    return {k: v for k, v in raw.items() if v != base.get(k)}
+
 @router.post("/api/v1/agents", status_code=status.HTTP_201_CREATED)
 async def create_agent(
     request: Request,
@@ -73,9 +82,7 @@ async def find_all_agents(
     request: Request,
     db_service: DBService = Depends(get_db_service)
 ):
-    
     results = await db_service.find_all(request)
-
     return results
 
 @router.get("/api/v1/agents/id/{agent_id}")
@@ -83,23 +90,34 @@ async def find_agent(
     agent_id: str,
     request: Request,
     db_service: DBService = Depends(get_db_service)
-):
-    
+):  
     results = await db_service.find_chat_agent(request, agent_id)
-
     return results
+
+
+@router.get("/api/v1/agents/personalities/{name}/soul")
+async def get_soul(
+    name: str,
+    personality_service: PersonalityService = Depends(get_personality_service)
+):
+    soul = personality_service.extract_soul(name)
+    return soul.minimal_dump()
 
 @router.get("/api/v1/agents/cognitive-modules/keys")
 async def list_cognitive_module_keys(request: Request):
     """List all cognitive module categories and their available keys"""
     cognitive_modules = request.app.state.cognitive_modules
-
     result = {
         category: list(modules.keys())
         for category, modules in cognitive_modules.items()
     }
 
     return result
+
+@router.get("/api/v1/agents/soul-protocol/schema", tags=["agents"])
+def get_agent_soul_protocol_schema():
+    # Return the full nested model with default values
+    return AgentSoulProtocol().model_json_schema()
 
 @router.get("/api/v1/agents/registry/{type}")
 async def get_agent_types(

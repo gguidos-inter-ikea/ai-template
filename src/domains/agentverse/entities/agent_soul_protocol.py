@@ -22,16 +22,13 @@ class AgentSoulProtocol(BaseModel):
         )
     
     # 🧬 Identity & Origin
-    name: Optional[str] = "Customized EVA"  # Unique identifier or archetype name
-    system_name: Optional[str] = "customized_eva"  # System name for the agent
+    name: Optional[str] = "Customized EVAs"  # Unique identifier or archetype name
     description: Optional[str] = None  # Optional textual summary or backstory
-    origin: Optional[str] = None  # e.g., "Mesopotamian Mythology", "AI Research Lab"
-    created_at: datetime = Field(default_factory=datetime.now)
-
     unlock_phrase: Optional[str] = None  # For "ritual" mode: symbolic or verbal key
     availability_schedule: Optional[Dict[str, str]] = None  # {"from": "09:00", "to": "17:00"} or {"weekday": "Sunday"}
     activation_conditions: Optional[Dict[str, str]] = None  # e.g., {"location": "lab", "role": "developer"}
     security_protocol_log: Optional[List[str]] = Field(default_factory=list)
+    created_at: datetime = Field(default_factory=datetime.now)
 
     # 🧠 Emotional & Cognitive Traits
     optimism_level: Optional[float] = 0.5  # [0.0 - 1.0] — Hopefulness vs. pessimism

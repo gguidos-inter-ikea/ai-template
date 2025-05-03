@@ -1,6 +1,9 @@
 from dependency_injector import containers, providers
 from src.base.dependencies.di_container import Container as BaseContainer
-from src.domains.agentverse.utils.safe_get_agent_class import safe_get_agent_class
+from src.domains.agentverse.utils.safe_get_class import (
+    safe_get_agent_class,
+    safe_get_personality_class
+)
 from src.domains.agentverse.agents.utils.get_agent_class import get_agent_class
 from src.domains.agentverse.registries.registries import registries
 from src.domains.agentverse.services.registry_service import (
@@ -18,8 +21,14 @@ from src.domains.agentverse.agents.personalities.utils.resolve_personality impor
 from src.domains.agentverse.agents.factory import (
     AgentFactory
 )
+from src.domains.agentverse.personalities.personality_factory import (
+    PersonalityFactory
+)
 from src.domains.agentverse.services.agent_service import (
     AgentService
+)
+from src.domains.agentverse.services.personality_service import (
+    PersonalityService
 )
 from src.domains.agentverse.services.db_service import (
     DBService
@@ -46,15 +55,27 @@ class AgentverseContainer(containers.DeclarativeContainer):
         
     )
 
-    agent_service = providers.Factory(
-        AgentService,
-        agent_factory = agent_factory,
-        safe_get_agent_class = safe_get_agent_class
+    personality_factory = providers.Factory(
+        PersonalityFactory,
+        get_personality_class = safe_get_personality_class
+    )
+
+    personality_service = providers.Factory(
+        PersonalityService,
+        personality_factory = personality_factory,
+        get_personality_class = safe_get_personality_class
     )
 
     registry_service = providers.Singleton(
         RegistryService,
         registries=providers.Object(registries)
+    )
+
+    agent_service = providers.Factory(
+        AgentService,
+        agent_factory = agent_factory,
+        personality_service = personality_service,
+        safe_get_agent_class = safe_get_agent_class
     )
 
     divine_orchestration_service = providers.Factory(

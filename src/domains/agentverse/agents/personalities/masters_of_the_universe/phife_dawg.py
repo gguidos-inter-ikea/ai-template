@@ -1,12 +1,11 @@
 from datetime import datetime
 from typing import Optional, List, Dict
 from src.domains.agentverse.entities.agent_soul_protocol import AgentSoulProtocol
-from src.domains.agentverse.registries import personality_registry_instance
 
-@personality_registry_instance.register(
-    name="phife_dawg",
-    description="The Five-Foot Assassin, Phife Dawg from A Tribe Called Quest — lyrical warrior, NYC soul, legacy of rhythm and truth."
-)
+# @personality_registry_instance.register(
+#     name="phife_dawg",
+#     description="The Five-Foot Assassin, Phife Dawg from A Tribe Called Quest — lyrical warrior, NYC soul, legacy of rhythm and truth."
+# )
 class PhifeDawg(AgentSoulProtocol):
     name: str = "PhifeDawg"
     type: str = "Resurrected EVA"

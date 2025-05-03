@@ -15,6 +15,9 @@ from src.domains.agentverse.exceptions import (
     UnknownAgentTypeError,
     InvalidComponentError
 )
+from src.domains.agentverse.services.personality_service import (
+    PersonalityService
+)
 from src.domains.agentverse.command_room.command_room import CommandRoomTransmitter
 from src.domains.agentverse.command_room.utils.emit import (
     emit_log
@@ -27,10 +30,12 @@ class AgentService:
     def __init__(
             self,
             agent_factory: AgentFactory,
+            personality_service: PersonalityService,
             safe_get_agent_class: Callable
     ):
         self.agent_factory = agent_factory
         self.safe_get_agent_class = safe_get_agent_class
+        self.personality_service = personality_service
 
     def check_if_agent_type_exists(self, agent_type: str) -> bool:
         try:
@@ -117,6 +122,11 @@ class AgentService:
     def create_agent(self, agent_config: AgentConfig):
         logger.debug(f"Task received for blueprinting: {agent_config.name}")
         log_operations_commander(f"[🔬 EVA ASSEMBLY] Blueprinting { agent_config.name }")
+        personality = self.personality_service.resolve(
+            profile_name=agent_config.personality_profile,
+            custom_personality=agent_config.personality
+        )
+        agent_config.personality = personality
         agent = self.agent_factory.create_agent(agent_config)
         logger.debug(f"[Completed] Blueprinting { agent_config.name } finished")
         log_operations_commander(f"[🔬 EVA ASSEMBLY] Blueprinting { agent_config.name } completed")

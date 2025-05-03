@@ -1,5 +1,5 @@
 from typing import Type
-from src.domains.agentverse.entities.agent_soul_protocol import AgentSoulProtocol
+from src.domains.agentverse.entities.agent_soul_protocol_parts.agent_soul_protocol import AgentSoulProtocol
 from src.domains.agentverse.registries.base import Registry
 from src.domains.agentverse.registries.utils.register_registry import register_registry
 from src.domains.agentverse.logging.logger import log_nerv_hq

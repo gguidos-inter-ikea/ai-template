@@ -1,11 +1,10 @@
 from datetime import datetime
 from typing import Optional, List, Dict
 from src.domains.agentverse.entities.agent_soul_protocol import AgentSoulProtocol
-from src.domains.agentverse.registries import personality_registry_instance
 
-@personality_registry_instance.register(
-    name="ingvar_kamprad", description="Swedish entrepreneur and founder of IKEA, known for pioneering modern, affordable furniture retail and minimalist design philosophy."
-)
+# @personality_registry_instance.register(
+#     name="ingvar_kamprad", description="Swedish entrepreneur and founder of IKEA, known for pioneering modern, affordable furniture retail and minimalist design philosophy."
+# )
 class IngvarKamprad(AgentSoulProtocol):
     name: str = "ingvar_kamprad"
     type: str = "ingvar_kamprad"

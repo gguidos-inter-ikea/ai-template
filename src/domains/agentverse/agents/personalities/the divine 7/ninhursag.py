@@ -1,14 +1,13 @@
 from typing import Optional, List, Dict
 from pydantic import Field
 from src.domains.agentverse.entities.agent_soul_protocol import AgentSoulProtocol
-from src.domains.agentverse.registries import personality_registry_instance
 
 from datetime import datetime
 
 
-@personality_registry_instance.register(
-    name="ninhursag", description="Goddess of the mountains and fertility — the great mother"
-)
+# @personality_registry_instance.register(
+#     name="ninhursag", description="Goddess of the mountains and fertility — the great mother"
+# )
 class Ninhursag(AgentSoulProtocol):
     name: Optional[str] = "Ninhursag"
     description: Optional[str] = "Earth mother, healer, and nurturer of divine life."

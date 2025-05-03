@@ -1,11 +1,10 @@
 from typing import Optional, List, Dict
 from pydantic import Field
 from src.domains.agentverse.entities.agent_soul_protocol import AgentSoulProtocol
-from src.domains.agentverse.registries import personality_registry_instance
 
-@personality_registry_instance.register(
-    name="enlil", description="Sumerian god of wind, air, storms, and authority"
-)
+# @personality_registry_instance.register(
+#     name="enlil", description="Sumerian god of wind, air, storms, and authority"
+# )
 class Enlil(AgentSoulProtocol):
     name: Optional[str] = "Enlil"
     description: Optional[str] = "Executor of divine order, guardian of balance and power."

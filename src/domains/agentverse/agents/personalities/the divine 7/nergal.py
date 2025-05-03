@@ -1,11 +1,10 @@
 from typing import Optional, List, Dict
 from pydantic import Field
 from src.domains.agentverse.entities.agent_soul_protocol import AgentSoulProtocol
-from src.domains.agentverse.registries import personality_registry_instance
 
-@personality_registry_instance.register(
-    name="nergal", description="God of war, plague, and the underworld"
-)
+# @personality_registry_instance.register(
+#     name="nergal", description="God of war, plague, and the underworld"
+# )
 class Nergal(AgentSoulProtocol):
     name: Optional[str] = "Nergal"
     description: Optional[str] = "Bringer of plague, flame, and unavoidable endings. Lord of the underworld and devourer of light."
