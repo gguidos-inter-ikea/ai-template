@@ -1,29 +1,26 @@
+# src/base/dependencies/containers/openai_container.py
 import logging
 from dependency_injector import containers, providers
-from src.base.config.config import settings
-from src.base.infrastructure.ai.openai_client import OpenAIClient
-from src.base.repositories.openai_repository import OpenAIRepository
+from src.base.config.ai_models_config import AiModelsConfig
+from src.base.infrastructure.ai.utils.build_llm_repositories import (
+    build_openai_repositories,
+)
 
-logger = logging.getLogger(__name__)
+logger    = logging.getLogger(__name__)
+settings  = AiModelsConfig()
+repos_map = build_openai_repositories(settings)     
+default_slug = settings.default_chat_model
+default_chat_slug = settings.openai_chat_models.split(",")[0].strip()
 
 class OpenAIContainer(containers.DeclarativeContainer):
-    """
-    Container for OpenAI-related dependencies.
-    """
-    logger.info("Initializing OpenAIContainer")
+    repositories = providers.Object(repos_map)
 
-    openai_client = providers.Singleton(
-        OpenAIClient,
-        url=settings.ai_models.openai_url,
-        api_key=settings.ai_models.openai_api_key,
-        embedding_model=settings.ai_models.embedding_model,
-        whispering_model=settings.ai_models.whispering_model,
-        image_model=settings.ai_models.image_model,
-        model=settings.ai_models.model,
-        model_mini=settings.ai_models.model_mini
+    default_openai_repository = providers.Callable(
+        lambda repo_dict: repo_dict["llm"][default_slug],
+        repositories,
     )
 
-    openai_repository = providers.Factory(
-        OpenAIRepository,
-        openai_client=openai_client
+    default_openai_client = providers.Callable(
+        lambda repo: repo.client,
+        default_openai_repository,
     )

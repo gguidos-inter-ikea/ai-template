@@ -50,7 +50,6 @@ class DBService:
 
             # 🌱 No assumptions — just dump the meaningful traits
 
-            
             data = {
                 "creator": db_agent.user_id,
                 "agent_id": db_agent.agent.id,
@@ -60,6 +59,8 @@ class DBService:
                 "agent_prompt": db_agent.agent.prompt,
                 "agent_chat_url": db_agent.agent.chat_url,
                 "agent_llm_type": db_agent.agent.llm_type,
+                "agent_image_type": db_agent.agent.image_type,
+                "agent_video_type": db_agent.agent.video_type,
                 "agent_db_type": db_agent.agent.db_type,
                 "agent_cache_type": db_agent.agent.cache_type,
                 "agent_knowledge_db_type": db_agent.agent.knowledge_db_type,

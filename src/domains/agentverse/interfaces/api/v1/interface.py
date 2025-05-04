@@ -105,19 +105,25 @@ async def get_soul(
 
 @router.get("/api/v1/agents/cognitive-modules/keys")
 async def list_cognitive_module_keys(request: Request):
-    """List all cognitive module categories and their available keys"""
-    cognitive_modules = request.app.state.cognitive_modules
-    result = {
-        category: list(modules.keys())
-        for category, modules in cognitive_modules.items()
-    }
+    cm       = request.app.state.cognitive_modules
+    defaults = request.app.state.cognitive_defaults
 
-    return result
+    return {
+        category: {
+          "options": list(backends.keys()),
+          "default": defaults[category]
+        }
+        for category, backends in cm.items()
+    }
 
 @router.get("/api/v1/agents/soul-protocol/schema", tags=["agents"])
 def get_agent_soul_protocol_schema():
     # Return the full nested model with default values
     return AgentSoulProtocol().model_json_schema()
+
+@router.get("/api/v1/agents/cognitive-modules/llm")
+def list_llm(request: Request):
+    return list(request.app.state.cognitive_modules["llm"].keys())
 
 @router.get("/api/v1/agents/registry/{type}")
 async def get_agent_types(

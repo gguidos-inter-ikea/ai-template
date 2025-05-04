@@ -30,8 +30,8 @@ class CognitiveResources:
     cache: Any
     vectordb: Any
     messaging: Any
-
-
+    image: Any = None
+    video: Any = None
 class AgentFactory:
     ...
     def __init__(
@@ -79,6 +79,8 @@ class AgentFactory:
                 type=agent_config.type,
                 chat_url=chat_url,
                 llm_type=agent_config.llm_type,
+                image_type=agent_config.image_type,
+                video_type=agent_config.video_type,
                 db_type=agent_config.db_type,
                 cache_type=agent_config.cache_type,
                 knowledge_db_type=agent_config.knowledge_db_type,
@@ -104,6 +106,8 @@ class AgentFactory:
         log_evangelion_bay(f"[⚙️ EVA CONSTRUCTION] Initializing assembly process for '{db_agent.agent_name}'")
 
         agent_cognitive_resources = self._resolve_components(request, db_agent)
+        log_evangelion_bay(agent_cognitive_resources)
+        
         log_evangelion_bay(f"[⚙️ EVA CONSTRUCTION] Core assembly in progress for '{db_agent.agent_name}'")
         agent_class = self.get_agent_class(db_agent.agent_type)
 
@@ -116,6 +120,8 @@ class AgentFactory:
             prompt=db_agent.agent_prompt,
             personality=db_agent.agent_personality,
             llm=agent_cognitive_resources.llm,
+            image=agent_cognitive_resources.image,
+            video=agent_cognitive_resources.video,
             db=agent_cognitive_resources.db,
             cache=agent_cognitive_resources.cache,
             vectordb=agent_cognitive_resources.vectordb,
@@ -152,17 +158,40 @@ class AgentFactory:
         return agent_class(**agent_blueprint)
 
     def _resolve_components(self, request: Request, db_agent: DBAgentPost) -> CognitiveResources:
-        log_evangelion_bay("[🔍 COGNITIVE LINKING] Resolving component matrix for EVA's operational memory...")
+        log_evangelion_bay("[🔍 COGNITIVE LINKING] Resolving component matrix for EVA's operational memory…")
 
-        llm = request.app.state.cognitive_modules["llm"].get(db_agent.agent_llm_type)
-        db = request.app.state.cognitive_modules["db"].get(db_agent.agent_db_type)
-        cache = request.app.state.cognitive_modules["cache"].get(db_agent.agent_cache_type)
-        vectordb = request.app.state.cognitive_modules["knowledge_db"].get(db_agent.agent_knowledge_db_type)
-        messaging = request.app.state.cognitive_modules["messaging"].get(db_agent.agent_messaging_type)
+        cm = request.app.state.cognitive_modules
+
+        # 1) LLM (always required)
+        llm = cm["llm"].get(db_agent.agent_llm_type)
+        if llm is None:
+            raise ValueError(f"LLM backend '{db_agent.agent_llm_type}' is not configured")
+
+        # 2) Optional image
+        image = None
+        if db_agent.agent_image_type:
+            image = cm.get("image", {}).get(db_agent.agent_image_type)
+            if image is None:
+                raise ValueError(f"Image backend '{db_agent.agent_image_type}' is not configured")
+
+        # 3) Optional video
+        video = None
+        if db_agent.agent_video_type:
+            video = cm.get("video", {}).get(db_agent.agent_video_type)
+            if video is None:
+                raise ValueError(f"Video backend '{db_agent.agent_video_type}' is not configured")
+
+        # 4) The rest
+        db       = cm["db"].get(db_agent.agent_db_type)
+        cache    = cm["cache"].get(db_agent.agent_cache_type)
+        vectordb = cm["knowledge_db"].get(db_agent.agent_knowledge_db_type)
+        messaging= cm["messaging"].get(db_agent.agent_messaging_type)
 
         log_evangelion_bay(
-            f"[🧠 COMPONENTS LINKED] Cognitive matrix mapped — "
-            f"LLM: {bool(llm)}, DB: {bool(db)}, Cache: {bool(cache)}, VectorDB: {bool(vectordb)}, Messaging: {bool(messaging)}"
+            "[🧠 COMPONENTS LINKED] Cognitive matrix mapped — "
+            f"LLM: {bool(llm)}, DB: {bool(db)}, Cache: {bool(cache)}, "
+            f"VectorDB: {bool(vectordb)}, Messaging: {bool(messaging)}, "
+            f"Image: {bool(image)}, Video: {bool(video)}"
         )
 
         return CognitiveResources(
@@ -170,7 +199,9 @@ class AgentFactory:
             db=db,
             cache=cache,
             vectordb=vectordb,
-            messaging=messaging
+            messaging=messaging,
+            image=image,
+            video=video,
         )
 
     def _attach_tools(self, agent: BaseAgent, specs: List[ToolSpec]) -> None:
@@ -193,6 +224,8 @@ class AgentFactory:
             # common names you want available:
             candidates = {
                 "llm":        agent.llm,
+                "image":      agent.image,
+                "video":      agent.video,
                 "vectordb":   agent.vectordb,
                 "cache":      agent.cache,
                 "db":         agent.db,

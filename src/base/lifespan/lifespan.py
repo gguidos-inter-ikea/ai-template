@@ -8,6 +8,7 @@ from src.base.config.config import settings
 from src.base.lifespan.utils import process_message_callback, start_consumer
 from src.domains.agentverse.events.message_events import register_message_events
 from src.base.security.signature_verificator import verify_signature
+from src.base.infrastructure.ai.utils.build_llm_repositories import build_openai_repositories
 import logging
 
 logger = logging.getLogger("lifespan")
@@ -52,7 +53,7 @@ async def lifespan(app: FastAPI):
         app.state.settings = settings
         app.state.mongodb = mongo_client
         app.state.redis_repository=container.redis.redis_repository()
-        app.state.openai_repository = container.openai.openai_repository()
+        app.state.openai_repository = container.openai.default_openai_repository()
         app.state.signature_verificator = verify_signature
         app.state.event_router = event_router
         register_message_events(event_router)
@@ -65,11 +66,12 @@ async def lifespan(app: FastAPI):
             "grants_creation_rights": True,
             "can_sign_agents": True
         }
-        
+
+        openai_repos = build_openai_repositories(settings.ai_models)
         app.state.cognitive_modules = {
-            "llm": {
-                "openai": container.openai.openai_repository()
-            },
+            "llm":   openai_repos.get("llm",   {}),
+            "image": openai_repos.get("image", {}),
+            "video": openai_repos.get("video", {}),
             "db": {
                 "mongodb": container.database.mongodb_repository(),
             },
@@ -86,8 +88,20 @@ async def lifespan(app: FastAPI):
                 "rabbitmq": container.messaging.rabbitmq_service()
             }
         }
+        cm = app.state.cognitive_modules
+        app.state.cognitive_defaults = {
+            # the only ones we *do* want a default for:
+            "llm":           next(iter(cm["llm"].keys()), ""),
+            "cache":         next(iter(cm["cache"].keys()), ""),
+            "communication": next(iter(cm["communication"].keys()), ""),
+            # everything else stays empty
+            "db":            "",
+            "knowledge_db":  "",
+            "messaging":     "",
+            "image":         "",
+            "video":         "",
+        }
         
-
         yield
         
     except Exception as e:

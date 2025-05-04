@@ -21,6 +21,8 @@ class BaseAgent(ABC):
         type: str,
         prompt: str,
         llm: Any,
+        image: Any = None,
+        video: Any = None,
         db: Any = None,
         cache: Any = None,
         vectordb: Any = None,
@@ -47,6 +49,8 @@ class BaseAgent(ABC):
         self.type = type
         self.prompt = prompt
         self.llm = llm
+        self.image = image
+        self.video = video
         self.db = db
         self.cache = cache
         self.vectordb = vectordb

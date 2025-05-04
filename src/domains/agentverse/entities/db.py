@@ -10,6 +10,8 @@ class DBAgentPost(BaseModel):
     agent_type: str
     agent_prompt: str
     agent_llm_type: str
+    agent_image_type: Optional[str] = None
+    agent_video_type: Optional[str] = None
     agent_db_type: Optional[str] = None
     agent_cache_type: Optional[str] = None
     agent_knowledge_db_type: Optional[str] = None

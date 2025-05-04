@@ -96,6 +96,8 @@ class AgentService:
             type=agent_request.type,
             prompt=agent_request.prompt,
             llm_type=agent_request.llm_type,
+            image_type=agent_request.image_type,
+            video_type=agent_request.video_type,
             db_type=agent_request.db_type,
             cache_type=agent_request.cache_type,
             knowledge_db_type=agent_request.knowledge_db_type,
